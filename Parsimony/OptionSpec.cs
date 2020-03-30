@@ -9,7 +9,7 @@ namespace Parsimony
     /// <typeparam name="TValue">The type of this option's value.</typeparam>
     public class OptionSpec<TOptions, TValue>
         : OptionSpec<TOptions>
-        where TOptions : new()
+        where TOptions : notnull, new()
     {
         private readonly Func<string, TValue> _parseFn;
 

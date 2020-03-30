@@ -9,7 +9,7 @@ namespace Parsimony
     /// A CLI parser for <typeparamref name="T"/>
     /// </summary>
     /// <typeparam name="T">The type of the options to parse.</typeparam>
-    public class Parser<T> where T : new()
+    public class Parser<T> where T : notnull, new()
     {
         private class Option
         {

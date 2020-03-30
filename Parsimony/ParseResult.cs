@@ -6,7 +6,7 @@ namespace Parsimony
     /// <summary>
     /// The result of parsing for a <typeparamref name="T"/>.
     /// </summary>
-    public class ParseResult<T>
+    public class ParseResult<T> where T : notnull, new()
     {
         /// <summary>
         /// The <typeparamref name="T"/> containing the option values.
