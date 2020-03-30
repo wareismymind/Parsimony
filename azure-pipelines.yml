@@ -21,10 +21,7 @@ steps:
   displayName: dotnet pack
   inputs:
     command: pack
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '$(GitVersion.Major)'
-    minorVersion: '$(GitVersion.Minor)'
-    patchVersion: '$(GitVersion.Patch)'
+    arguments: '-p:PackageVersion=$(GitVersion.MajorMinorPatch)'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
