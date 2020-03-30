@@ -8,11 +8,24 @@ variables:
   GitVersion.SemVer: ''
 
 steps:
+- task: DotNetCoreCLI@2
+  displayName: dotnet test
+  inputs:
+    command: test
+    publishTestResults: true
 - task: UseGitVersion@5
   displayName: gitversion
   inputs:
     versionSpec: '5.x'
-- script: echo $(GitVersion.SemVer)
-- script: echo $(GitVersion.Major)
-- script: echo $(GitVersion.Minor)
-- script: echo $(GitVersion.Patch)
+- task: DotNetCoreCLI@2
+  displayName: dotnet pack
+  inputs:
+    versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '$(GitVersion.Major)'
+    minorVersion: '$(GitVersion.Minor)'
+    patchVersion: '$(GitVersion.Patch)'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'package'
