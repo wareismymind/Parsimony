@@ -1,0 +1,19 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  GitVersion.SemVer: ''
+
+steps:
+- task: UseGitVersion@5
+  displayName: gitversion
+  inputs:
+    versionSpec: '5.x'
+    updateAssemblyInfo: true
+- script: echo $(GitVersion.SemVer)
+- script: echo $(GitVersion.Major)
+- script: echo $(GitVersion.Minor)
+- script: echo $(GitVersion.Patch)
