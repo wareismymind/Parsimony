@@ -20,6 +20,7 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: dotnet pack
   inputs:
+    command: pack
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '$(GitVersion.Major)'
     minorVersion: '$(GitVersion.Minor)'
