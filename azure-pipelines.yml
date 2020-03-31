@@ -19,9 +19,8 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: dotnet pack
   inputs:
-    command: pack
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: GitVersion.SemVer
+    command: custom
+    custom: 'pack -p:Version=$(GitVersion.SemVer) -p:PackageVersion=$(GitVersion.SemVer)'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
