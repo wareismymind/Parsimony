@@ -27,6 +27,7 @@ steps:
   displayName: dotnet pack
   inputs:
     command: pack
+    nobuild: true
     versioningScheme: byEnvVar
     versionEnvVar: GitVersion.SemVer
     packDirectory: '$(Build.ArtifactStagingDirectory)'
