@@ -20,7 +20,7 @@ steps:
   displayName: dotnet test
   inputs:
     command: test
-    nobuild: true
+    arguments: -p:Version=$(GitVersion.MajorMinorPatch)
     publishTestResults: true
 - task: DotNetCoreCLI@2
   displayName: dotnet pack
