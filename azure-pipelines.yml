@@ -16,7 +16,7 @@ steps:
   inputs:
     command: build
     versioningScheme: byEnvVar
-    versionEnvVar: GitVersion.SemVer
+    versionEnvVar: GitVersion.MajorMinorPatch
 - task: DotNetCoreCLI@2
   displayName: dotnet test
   inputs:
