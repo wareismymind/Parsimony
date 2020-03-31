@@ -20,7 +20,8 @@ steps:
   displayName: dotnet pack
   inputs:
     command: custom
-    custom: 'pack -p:Version=$(GitVersion.SemVer) -p:PackageVersion=$(GitVersion.SemVer)'
+    custom: 'pack'
+    arguments: [ '-p:Version=$(GitVersion.SemVer)', ' -p:PackageVersion=$(GitVersion.SemVer)']
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
