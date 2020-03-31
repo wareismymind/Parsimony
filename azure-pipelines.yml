@@ -7,21 +7,28 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DotNetCoreCLI@2
-  displayName: dotnet test
-  inputs:
-    command: test
-    publishTestResults: true
 - task: UseGitVersion@5
   displayName: gitversion
   inputs:
     versionSpec: '5.x'
 - task: DotNetCoreCLI@2
+  displayName: dotnet build
+  inputs:
+    command: build
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.SemVer
+- task: DotNetCoreCLI@2
+  displayName: dotnet test
+  inputs:
+    command: test
+    nobuild: true
+    publishTestResults: true
+- task: DotNetCoreCLI@2
   displayName: dotnet pack
   inputs:
-    command: custom
-    custom: 'pack'
-    arguments: '-p:Version=$(GitVersion.SemVer) -p:PackageVersion=$(GitVersion.SemVer)'
+    command: pack
+    versioningScheme: byEnvVar
+    versionEnvVar: GitVersion.SemVer
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
