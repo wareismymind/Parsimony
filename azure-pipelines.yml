@@ -21,7 +21,7 @@ steps:
   inputs:
     command: custom
     custom: 'pack'
-    arguments: [ '-p:Version=$(GitVersion.SemVer)', ' -p:PackageVersion=$(GitVersion.SemVer)']
+    arguments: '-p:Version=$(GitVersion.SemVer) -p:PackageVersion=$(GitVersion.SemVer)'
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
