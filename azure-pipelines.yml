@@ -6,9 +6,6 @@ pr: none
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  GitVersion.SemVer: ''
-
 steps:
 - task: DotNetCoreCLI@2
   displayName: dotnet test
@@ -23,7 +20,8 @@ steps:
   displayName: dotnet pack
   inputs:
     command: pack
-    arguments: '-p:PackageVersion=$(GitVersion.MajorMinorPatch)'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: GitVersion.SemVer
     packDirectory: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
