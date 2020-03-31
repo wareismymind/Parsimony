@@ -11,11 +11,6 @@ steps:
   displayName: gitversion
   inputs:
     versionSpec: '5.x'
-# - task: DotNetCoreCLI@2
-#   displayName: dotnet build
-#   inputs:
-#     command: build
-#     arguments: -p:Version=$(GitVersion.MajorMinorPatch)
 - task: DotNetCoreCLI@2
   displayName: dotnet test
   inputs:
