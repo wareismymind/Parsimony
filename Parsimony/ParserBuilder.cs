@@ -6,15 +6,15 @@ using System.Reflection;
 namespace Parsimony
 {
     /// <summary>
-    /// A builder type for <see cref="Parser{T}"/> objects.
+    /// A builder type for <see cref="Parser{TOptions}"/> objects.
     /// </summary>
-    /// <typeparam name="T">The type of the options to parse.</typeparam>
-    public class ParserBuilder<T> where T : new()
+    /// <typeparam name="TOptions">The type of the options to parse.</typeparam>
+    public class ParserBuilder<TOptions> where TOptions : new()
     {
-        private List<OptionSpec<T>> _options = new List<OptionSpec<T>>();
+        private List<OptionSpec<TOptions>> _options = new List<OptionSpec<TOptions>>();
 
         /// <summary>
-        /// Creates a new instance of <see cref="ParserBuilder{T}"/>.
+        /// Creates a new instance of <see cref="ParserBuilder{TOptions}"/>.
         /// </summary>
         public ParserBuilder() { }
 
@@ -23,14 +23,14 @@ namespace Parsimony
         /// </summary>
         /// <typeparam name="TValue">The type of the option's value.</typeparam>
         /// <param name="shortName">The short name of the option.</param>
-        /// <param name="expression">The property or field of <typeparamref name="T"/> to set.</param>
-        /// <returns>The <see cref="ParserBuilder{T}"/>.</returns>
+        /// <param name="expression">The property or field of <typeparamref name="TOptions"/> to set.</param>
+        /// <returns>The <see cref="ParserBuilder{TOptions}"/>.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="expression"/> is <c>null</c>.
         /// </exception>
-        public ParserBuilder<T> AddOption<TValue>(
+        public ParserBuilder<TOptions> AddOption<TValue>(
             char shortName,
-            Expression<Func<T, TValue>> expression)
+            Expression<Func<TOptions, TValue>> expression)
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
@@ -42,7 +42,7 @@ namespace Parsimony
                     "Must be a member-access expression for a property or field",
                     nameof(expression));
 
-            var setMethod = null as Action<T, object>;
+            var setMethod = null as Action<TOptions, object>;
             var member = memberExpression.Member;
 
             switch (member)
@@ -71,20 +71,20 @@ namespace Parsimony
                     throw new ArgumentException("Must be a member-access expression for a property or field", nameof(expression));
             }
 
-            setMethod(new T(), new object());
+            setMethod(new TOptions(), new object());
 
             return this;
         }
 
         /// <summary>
-        /// Builds a <see cref="Parser{T}"/>.
+        /// Builds a <see cref="Parser{TOptions}"/>.
         /// </summary>
-        /// <returns>The <see cref="Parser{T}"/>.</returns>
-        public Parser<T> Build(Action<ParserConfig> configure)
+        /// <returns>The <see cref="Parser{TOptions}"/>.</returns>
+        public Parser<TOptions> Build(Action<ParserConfig> configure)
         {
             var options = new ParserConfig();
             configure(options);
-            return new Parser<T>(null, null);
+            return new Parser<TOptions>(null, null);
         }
     }
 }
