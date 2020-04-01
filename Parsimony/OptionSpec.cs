@@ -19,7 +19,7 @@ namespace Parsimony
         /// The default value for the option. If <see cref="OptionSpec{TOptions}.Required"/> is
         /// <c>true</c> this value  will be ignored.
         /// </summary>
-        public TValue Default { get; private set; }
+        public TValue Default { get; }
 
         /// <summary>
         /// The <see cref="Type"/> of the option.
@@ -86,17 +86,17 @@ namespace Parsimony
         /// <summary>
         /// The short name of the option.
         /// </summary>
-        public char? ShortName { get; private set; }
+        public char? ShortName { get; }
 
         /// <summary>
         /// The long name of the option.
         /// </summary>
-        public string? LongName { get; private set; }
+        public string? LongName { get; }
 
         /// <summary>
         /// Indicates whether the option is required.
         /// </summary>
-        public bool Required { get; private set; }
+        public bool Required { get; }
 
         /// <summary>
         /// Creates a new <see cref="OptionSpec{TOptions,TValue}"/>.

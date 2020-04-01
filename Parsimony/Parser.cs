@@ -25,9 +25,9 @@ namespace Parsimony
 
         private class ParserState
         {
-            public ParseResult<T> Result { get; private set; }
+            public ParseResult<T> Result { get; }
 
-            public List<string> Input { get; private set; }
+            public List<string> Input { get; }
 
             public ParserState(ParseResult<T> result, IEnumerable<string> input)
             {
@@ -37,7 +37,7 @@ namespace Parsimony
         }
 
         private static readonly Regex _shortNameOptionPatern =
-            new Regex("^-(?<option>[A-Za-z])(?<rest>.+)?", RegexOptions.Compiled);
+            new Regex("^-(?<option>[A-Za-z])(?<rest>.+)?");
 
         private readonly List<Option> _options;
 
