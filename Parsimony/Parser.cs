@@ -74,7 +74,7 @@ namespace Parsimony
             var tokens = (input ?? throw new ArgumentNullException(nameof(input))).ToList();
 
             var options = new T();
-            var arguments = new List<string>(tokens.Count);
+            var arguments = new List<string>();
             var result = new ParseResult<T>(options, arguments);
             return Parse(result, tokens);
         }
