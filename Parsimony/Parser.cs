@@ -6,18 +6,18 @@ using System.Text.RegularExpressions;
 namespace Parsimony
 {
     /// <summary>
-    /// A CLI parser for <typeparamref name="T"/>
+    /// A CLI parser for <typeparamref name="TOptions"/>
     /// </summary>
-    /// <typeparam name="T">The type of the options to parse.</typeparam>
-    public class Parser<T> where T : notnull, new()
+    /// <typeparam name="TOptions">The type of the options to parse.</typeparam>
+    public class Parser<TOptions> where TOptions : notnull, new()
     {
         private class Option
         {
-            public OptionSpec<T> Spec { get; private set; }
+            public OptionSpec<TOptions> Spec { get; private set; }
 
             public bool Set { get; set; }
 
-            public Option(OptionSpec<T> spec)
+            public Option(OptionSpec<TOptions> spec)
             {
                 Spec = spec ?? throw new ArgumentNullException(nameof(spec));
             }
@@ -25,11 +25,11 @@ namespace Parsimony
 
         private class ParserState
         {
-            public ParseResult<T> Result { get; }
+            public ParseResult<TOptions> Result { get; }
 
             public List<string> Input { get; }
 
-            public ParserState(ParseResult<T> result, IEnumerable<string> input)
+            public ParserState(ParseResult<TOptions> result, IEnumerable<string> input)
             {
                 Result = result ?? throw new ArgumentNullException(nameof(result));
                 Input = input?.ToList() ?? throw new ArgumentNullException(nameof(input));
@@ -44,14 +44,14 @@ namespace Parsimony
         private readonly ParserConfig _configuration;
 
         /// <summary>
-        /// Creates a new <see cref="Parser{T}"/>.
+        /// Creates a new <see cref="Parser{TOptions}"/>.
         /// </summary>
         /// <param name="optionSpecs">The option specifications.</param>
         /// <param name="configuration">The parser configuration.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="optionSpecs"/> or <paramref name="configuration"/> is <c>null</c>.
         /// </exception>
-        public Parser(IEnumerable<OptionSpec<T>> optionSpecs, ParserConfig configuration)
+        public Parser(IEnumerable<OptionSpec<TOptions>> optionSpecs, ParserConfig configuration)
         {
             _options = (optionSpecs ?? throw new ArgumentNullException(nameof(optionSpecs)))
                 .Select(spec => new Option(spec)).ToList();
@@ -62,37 +62,37 @@ namespace Parsimony
         }
 
         /// <summary>
-        /// Parses a <typeparamref name="T"/> from <paramref name="input"/>.
+        /// Parses a <typeparamref name="TOptions"/> from <paramref name="input"/>.
         /// </summary>
         /// <param name="input">The tokens to parse.</param>
-        /// <returns>The <see cref="ParseResult{T}"/>.</returns>
+        /// <returns>The <see cref="ParseResult{TOptions}"/>.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="input"/> is <c>null</c>.
         /// </exception>
-        public ParseResult<T> Parse(IEnumerable<string> input)
+        public ParseResult<TOptions> Parse(IEnumerable<string> input)
         {
             var tokens = (input ?? throw new ArgumentNullException(nameof(input))).ToList();
 
-            var options = new T();
+            var options = new TOptions();
             var arguments = new List<string>();
-            var result = new ParseResult<T>(options, arguments);
+            var result = new ParseResult<TOptions>(options, arguments);
             return Parse(result, tokens);
         }
 
         /// <summary>
-        /// Parses a <typeparamref name="T"/> from <paramref name="input"/>.
+        /// Parses a <typeparamref name="TOptions"/> from <paramref name="input"/>.
         /// </summary>
         /// <param name="input">The tokens to parse.</param>
-        /// <returns>The <see cref="ParseResult{T}"/>.</returns>
+        /// <returns>The <see cref="ParseResult{TOptions}"/>.</returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="input"/> is <c>null</c>.
         /// </exception>
-        public ParseResult<T> Parse(params string[] input)
+        public ParseResult<TOptions> Parse(params string[] input)
         {
             return Parse(input as IEnumerable<string>);
         }
 
-        private ParseResult<T> Parse(ParseResult<T> result, List<string> input)
+        private ParseResult<TOptions> Parse(ParseResult<TOptions> result, List<string> input)
         {
             var state = new ParserState(result, input);
             while (state.Input.Count > 0)
@@ -132,8 +132,8 @@ namespace Parsimony
             input = input.Skip(1).ToList();
 
             var optionType = option.Spec.OptionType;
-            var typedOption = typeof(OptionSpec<,>).MakeGenericType(new[] { typeof(T), optionType });
-            var set = typedOption.GetMethod("Set", new[] { typeof(T), optionType });
+            var typedOption = typeof(OptionSpec<,>).MakeGenericType(new[] { typeof(TOptions), optionType });
+            var set = typedOption.GetMethod("Set", new[] { typeof(TOptions), optionType });
 
             if (optionType == typeof(bool))
             {
@@ -143,7 +143,7 @@ namespace Parsimony
                 if (match.Groups["rest"].Success)
                     input.Insert(1, $"-{match.Groups["rest"].Value}");
 
-                return new ParserState(new ParseResult<T>(options, arguments), input);
+                return new ParserState(new ParseResult<TOptions>(options, arguments), input);
             }
 
             string nextToken()
@@ -165,7 +165,7 @@ namespace Parsimony
             var value = parse.Invoke(option.Spec, new object[] { valueToken });
             set.Invoke(option.Spec, new object[] { options, value });
             option.Set = true;
-            return new ParserState(new ParseResult<T>(options, arguments), input);
+            return new ParserState(new ParseResult<TOptions>(options, arguments), input);
         }
 
         private ParserState? ConsumeLongNameOption(ParserState state)
@@ -188,7 +188,7 @@ namespace Parsimony
             arguments.Add(state.Input[0]);
             var input = state.Input.Skip(1);
 
-            return new ParserState(new ParseResult<T>(options, arguments), input);
+            return new ParserState(new ParseResult<TOptions>(options, arguments), input);
         }
 
         private ParserState? ConsumeAllArguments(ParserState state)
@@ -206,7 +206,7 @@ namespace Parsimony
             var arguments = state.Result.Arguments.ToList();
             arguments.AddRange(state.Input);
             return new ParserState(
-                new ParseResult<T>(state.Result.Options, arguments), Array.Empty<string>());
+                new ParseResult<TOptions>(state.Result.Options, arguments), Array.Empty<string>());
         }
     }
 }
