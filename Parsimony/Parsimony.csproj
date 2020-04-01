@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <PackageProjectUrl>https://github.com/slagroom/Parsimony</PackageProjectUrl>
+    <Authors>sl4gr00m@gmail.com</Authors>
+    <PackageDescription>
+      A flexible, uninvasive option parsing library.
+    </PackageDescription>
+    <PackageTags>CLI;Options;Parsing;Parser</PackageTags>
+    <DocumentationFile>Parsimony.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>
