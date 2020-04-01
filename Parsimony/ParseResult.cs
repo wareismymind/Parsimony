@@ -4,14 +4,14 @@ using System.Collections.Generic;
 namespace Parsimony
 {
     /// <summary>
-    /// The result of parsing for a <typeparamref name="T"/>.
+    /// The result of parsing for a <typeparamref name="TOptions"/>.
     /// </summary>
-    public class ParseResult<T> where T : notnull, new()
+    public class ParseResult<TOptions> where TOptions : notnull
     {
         /// <summary>
-        /// The <typeparamref name="T"/> containing the option values.
+        /// The <typeparamref name="TOptions"/> containing the option values.
         /// </summary>
-        public T Options { get; private set; }
+        public TOptions Options { get; private set; }
 
         /// <summary>
         /// The positional argument values.
@@ -25,11 +25,11 @@ namespace Parsimony
         public IEnumerable<string> Arguments { get; private set; }
 
         /// <summary>
-        /// Creates a new <see cref="ParseResult{T}"/>.
+        /// Creates a new <see cref="ParseResult{TOptions}"/>.
         /// </summary>
-        /// <param name="options">The <typeparamref name="T"/> containing the option values.</param>
-        /// <param name="arguments">The non-option</param>
-        public ParseResult(T options, IEnumerable<string> arguments)
+        /// <param name="options">The <typeparamref name="TOptions"/> containing the option values.</param>
+        /// <param name="arguments">The non-option tokens encountered during parsing.</param>
+        public ParseResult(TOptions options, IEnumerable<string> arguments)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));

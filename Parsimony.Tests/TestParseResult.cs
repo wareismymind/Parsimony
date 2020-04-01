@@ -7,29 +7,45 @@ namespace Parsimony.Tests
     public class TestParseResult
     {
         [Fact]
-        public void CtorRequiresResult()
+        public void Ctor_NullOptions_Throws()
         {
-            static ParseResult<object> ctor(object result) =>
-               new ParseResult<object>(result, new[] { "foo", "bar", "baz" });
-
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Assert.Throws<ArgumentNullException>("options", () => ctor(null));
+            Assert.Throws<ArgumentNullException>(
+                "options",
+                () => new ParseResult<object>(null, Array.Empty<string>()));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
-            ctor(new object());
         }
 
         [Fact]
-        public void CtorRequiresArguments()
+        public void Ctor_NullArguments_Throws()
         {
-            static ParseResult<object> ctor(IEnumerable<string> arguments) =>
-               new ParseResult<object>(new object(), arguments);
-
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Assert.Throws<ArgumentNullException>("arguments", () => ctor(null));
+            Assert.Throws<ArgumentNullException>(
+                "arguments",
+                () => new ParseResult<object>(new object(), null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
 
-            ctor(Array.Empty<string>());
+        [Fact]
+        public void Ctor_NonNullOptionsAndArguments_Constructs()
+        {
+            var _ = new ParseResult<object>(new object(), Array.Empty<string>());
+        }
+
+        [Fact]
+        public void Options_Constructed_HasExpectedValue()
+        {
+            var options = new object();
+            var underTest = new ParseResult<object>(options, Array.Empty<string>());
+            Assert.Same(options, underTest.Options);
+        }
+
+        [Fact]
+        public void Arguments_Constructed_HasExpectedValue()
+        {
+            var arguments = Array.Empty<string>();
+            var underTest = new ParseResult<object>(new object(), arguments);
+            Assert.Same(arguments, underTest.Arguments);
         }
     }
 }
