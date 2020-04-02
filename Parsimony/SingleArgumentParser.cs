@@ -4,12 +4,12 @@ using System.Linq;
 namespace Parsimony
 {
     /// <summary>
-    /// A parser that consumes all of the remaining input as arguments.
+    /// A parser that consumes the next input token as an argument.
     /// </summary>
-    public class ArgumentsParser<TOptions> where TOptions : notnull
+    public class SingleArgumentParser<TOptions> where TOptions : notnull
     {
         /// <summary>
-        /// Parses the remaining arguments from the input.
+        /// Parses the next argument from the input.
         /// </summary>
         /// <param name="state">The current parser state.</param>
         /// <returns>The new state.</returns>
@@ -17,9 +17,14 @@ namespace Parsimony
         {
             if (state == null) throw new ArgumentNullException(nameof(state));
             var arguments = state.Result.Arguments.ToList();
-            arguments.AddRange(state.Input);
+            var input = state.Input.ToList();
+            if (input.Count > 0)
+            {
+                arguments.Add(input.First());
+                input = input.Skip(1).ToList();
+            }
             var result = new ParseResult<TOptions>(state.Result.Options, arguments);
-            return new ParserState<TOptions>(result, Array.Empty<string>());
+            return new ParserState<TOptions>(result, input);
         }
     }
 }
