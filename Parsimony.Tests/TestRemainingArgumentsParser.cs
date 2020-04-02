@@ -24,17 +24,13 @@ namespace Parsimony.Tests
         }
 
         [Fact]
-        public void Parse_EmptyInput_ChangesNothing()
+        public void Parse_EmptyInput_Throws()
         {
-            var options = new Options { Foo = true, Bar = "nana", Baz = 17 };
-            var arguments = new[] { "foo", "bar" };
-            var result = new ParseResult<Options>(options, arguments);
+            var result = new ParseResult<Options>(new Options(), Array.Empty<string>());
             var state = new ParserState<Options>(result, Array.Empty<string>());
             var underTest = new RemainingArgumentsParser<Options>();
-            var newState = underTest.Parse(state);
-            Assert.Equal(state.Result.Options, newState.Result.Options);
-            Assert.Equal(state.Result.Arguments, newState.Result.Arguments);
-            Assert.Equal(state.Input, newState.Input);
+            // TODO: Test custom exception
+            Assert.Throws<Exception>(() => underTest.Parse(state));
         }
 
         [Fact]
