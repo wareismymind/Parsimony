@@ -34,7 +34,7 @@ namespace Parsimony
         /// <param name="arguments">The positional arguments.</param>
         /// <param name="input">The input to parse.</param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="options"/>, <paramref name="arguments"/>, or <paramref name="input"/> is <c>null</c>.
+        /// <paramref name="assignments"/>, <paramref name="arguments"/>, or <paramref name="input"/> is <c>null</c>.
         /// </exception>
         public ParseContext(
             IEnumerable<Action<TOptions>> assignments, IEnumerable<string> arguments, IEnumerable<string> input)

@@ -9,6 +9,10 @@ namespace Parsimony
     /// </summary>
     internal class Option<TOptions, TValue> where TOptions : notnull
     {
+        private readonly string? _shortSelector;
+        private readonly string? _longSelector;
+        private readonly string[] _optionSelectors;
+
         /// <summary>
         /// The option's name.
         /// </summary>
@@ -24,6 +28,12 @@ namespace Parsimony
         public Option(OptionName name)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+
+            _shortSelector = Name.ShortName != null ? $"-{Name.ShortName}" : null;
+            _longSelector = Name.LongName != null ? $"--{Name.LongName}" : null;
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+            _optionSelectors = new[] { _shortSelector, _longSelector }.Where(n => n != null).ToArray();
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
         }
 
         public bool CanParse(ParseContext<TOptions> context)
@@ -48,27 +58,22 @@ namespace Parsimony
         private NameAndValueResult ParseNameAndValue(IEnumerable<string> input)
         {
             var tokens = input.ToList();
-            var shortName = Name.ShortName != null ? $"-{Name.ShortName}" : null;
-            var longName = Name.LongName != null ? $"--{Name.LongName}" : null;
-
-            // optionNames is guaranteed to have at least one value because a long or short name is required.
-            var optionNames = new[] { shortName, longName }.Where(n => n != null).ToList();
 
             if (tokens.Count == 0)
                 return new NameAndValueResult(null, input);
 
             // Standalone flag
             // If we find a short-name or long-name flag we're done.
-            if (typeof(TValue) == typeof(bool) && optionNames.Contains(tokens[0]))
+            if (typeof(TValue) == typeof(bool) && _optionSelectors.Contains(tokens[0]))
                 return new NameAndValueResult(new NameAndValue(tokens[0], "true"), tokens.Skip(1));
 
             // Adjoined short-name flag
             // If we find a short-name flag on the front of a token then we need to extract the flag and leave the rest
             // of the short-name options in the token.
-            if (typeof(TValue) == typeof(bool) && shortName != null && tokens[0].StartsWith(shortName))
+            if (typeof(TValue) == typeof(bool) && _shortSelector != null && tokens[0].StartsWith(_shortSelector))
             {
                 tokens[0] = $"-{tokens[0].Substring(2)}";
-                return new NameAndValueResult(new NameAndValue(shortName, "true"), tokens);
+                return new NameAndValueResult(new NameAndValue(_shortSelector, "true"), tokens);
             }
 
             // Equals-joined long-name flags work the same as equals-joined long-name options and they're handled
@@ -79,24 +84,24 @@ namespace Parsimony
 
             // Space separated option and value
             // If we find a short-name or long-name option then we need to consume the next token to get the value.
-            if (typeof(TValue) != typeof(bool) && optionNames.Contains(tokens[0]) && tokens.Count >= 2)
+            if (typeof(TValue) != typeof(bool) && _optionSelectors.Contains(tokens[0]) && tokens.Count >= 2)
                 return new NameAndValueResult(new NameAndValue(tokens[0], tokens[1]), tokens.Skip(2));
 
             // Adjoined short-name option and value
             // If we find a short-name option on the front of a token then the rest of the token is the value.
-            if (typeof(TValue) != typeof(bool) && shortName != null && tokens[0].StartsWith(shortName) && tokens[0].Length > 2)
-                return new NameAndValueResult(new NameAndValue(shortName, tokens[0].Substring(2)), tokens.Skip(1));
+            if (typeof(TValue) != typeof(bool) && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
+                return new NameAndValueResult(new NameAndValue(_shortSelector, tokens[0].Substring(2)), tokens.Skip(1));
 
             // Equals-joined long-name option/flag and value
             // If we find a long-name option or flag joined to a value by an equals sign then everything after the
             // equals sign is the value.
-            if (longName != null)
+            if (_longSelector != null)
             {
-                var prefix = $"{longName}=";
+                var prefix = $"{_longSelector}=";
                 if (tokens[0].StartsWith(prefix) && tokens[0].Length > prefix.Length)
                 {
                     return new NameAndValueResult(
-                        new NameAndValue(longName, tokens[0].Substring(prefix.Length)), tokens.Skip(1));
+                        new NameAndValue(_longSelector, tokens[0].Substring(prefix.Length)), tokens.Skip(1));
                 }
             }
 
