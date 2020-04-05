@@ -13,6 +13,9 @@ namespace Parsimony
         private readonly string? _longSelector;
         private readonly string[] _optionSelectors;
 
+        private bool IsFlag { get; } = typeof(TValue) == typeof(bool);
+        private bool IsOption => !IsFlag;
+
         /// <summary>
         /// The option's name.
         /// </summary>
@@ -64,13 +67,13 @@ namespace Parsimony
 
             // Standalone flag
             // If we find a short-name or long-name flag we're done.
-            if (typeof(TValue) == typeof(bool) && _optionSelectors.Contains(tokens[0]))
+            if (IsFlag && _optionSelectors.Contains(tokens[0]))
                 return new NameAndValueResult(new NameAndValue(tokens[0], "true"), tokens.Skip(1));
 
             // Adjoined short-name flag
             // If we find a short-name flag on the front of a token then we need to extract the flag and leave the rest
             // of the short-name options in the token.
-            if (typeof(TValue) == typeof(bool) && _shortSelector != null && tokens[0].StartsWith(_shortSelector))
+            if (IsFlag && _shortSelector != null && tokens[0].StartsWith(_shortSelector))
             {
                 tokens[0] = $"-{tokens[0].Substring(2)}";
                 return new NameAndValueResult(new NameAndValue(_shortSelector, "true"), tokens);
@@ -84,12 +87,12 @@ namespace Parsimony
 
             // Space separated option and value
             // If we find a short-name or long-name option then we need to consume the next token to get the value.
-            if (typeof(TValue) != typeof(bool) && _optionSelectors.Contains(tokens[0]) && tokens.Count >= 2)
+            if (IsOption && _optionSelectors.Contains(tokens[0]) && tokens.Count >= 2)
                 return new NameAndValueResult(new NameAndValue(tokens[0], tokens[1]), tokens.Skip(2));
 
             // Adjoined short-name option and value
             // If we find a short-name option on the front of a token then the rest of the token is the value.
-            if (typeof(TValue) != typeof(bool) && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
+            if (IsOption && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
                 return new NameAndValueResult(new NameAndValue(_shortSelector, tokens[0].Substring(2)), tokens.Skip(1));
 
             // Equals-joined long-name option/flag and value
