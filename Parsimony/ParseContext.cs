@@ -13,9 +13,9 @@ namespace Parsimony
     internal class ParseContext<TOptions> where TOptions : notnull
     {
         /// <summary>
-        /// The option set.
+        /// The assignments to make to the <typeparamref name="TOptions"/>.
         /// </summary>
-        public TOptions Options { get; }
+        public IReadOnlyList<Action<TOptions>> Assignments { get; }
 
         /// <summary>
         /// The positional arguments.
@@ -30,15 +30,16 @@ namespace Parsimony
         /// <summary>
         /// Creates a new <see cref="ParseContext{TOptions}"/>.
         /// </summary>
-        /// <param name="options">The option set.</param>
+        /// <param name="assignments">The actions to perform on the <typeparamref name="TOptions"/>.</param>
         /// <param name="arguments">The positional arguments.</param>
         /// <param name="input">The input to parse.</param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="options"/>, <paramref name="arguments"/>, or <paramref name="input"/> is <c>null</c>.
         /// </exception>
-        public ParseContext(TOptions options, IEnumerable<string> arguments, IEnumerable<string> input)
+        public ParseContext(
+            IEnumerable<Action<TOptions>> assignments, IEnumerable<string> arguments, IEnumerable<string> input)
         {
-            Options = options ?? throw new ArgumentNullException(nameof(options));
+            Assignments = assignments?.ToList() ?? throw new ArgumentNullException(nameof(assignments));
             Arguments = arguments?.ToList() ?? throw new ArgumentNullException(nameof(arguments));
             Input = input?.ToList() ?? throw new ArgumentNullException(nameof(input));
         }

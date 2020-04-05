@@ -41,6 +41,7 @@ namespace Parsimony
         /// <returns>A <see cref="ParseResult{TOptions, TError}"/>.</returns>
         public ParseResult<TOptions, string> Parse(ParseContext<TOptions> context)
         {
+
             return new ParseResult<TOptions, string>(context, "not implemented");
         }
 

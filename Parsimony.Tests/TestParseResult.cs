@@ -3,10 +3,13 @@ using Xunit;
 
 namespace Parsimony.Tests
 {
+
+
     public class TestParseResult
     {
         private readonly ParseContext<Options> _context =
-            new ParseContext<Options>(new Options(true, "foo"), new[] { "bar", "baz" }, new[] { "harpo", "groucho" });
+            new ParseContext<Options>(
+                Array.Empty<Action<Options>>(), new[] { "bar", "baz" }, new[] { "harpo", "groucho" });
 
         [Fact]
         public void CtorContext_NullContext_Throws()

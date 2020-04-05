@@ -5,6 +5,9 @@ namespace Parsimony.Tests
 {
     public class TestOption
     {
+        private readonly Action<Options>[] _assignments = Array.Empty<Action<Options>>();
+        private readonly string[] _emptyStrings = Array.Empty<string>();
+
         [Fact]
         public void Ctor_NullName_Throws()
         {
@@ -22,7 +25,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_ShortNameFlag_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "-f" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-f" });
             var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
@@ -30,7 +33,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_LongNameFlag_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "--foo" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo" });
             var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
@@ -38,7 +41,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_AdjoinedShortNameFlag_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "-fgh" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-fgh" });
             var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
@@ -46,7 +49,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_EqualsJoinedLongNameFlag_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "--foo=yes" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo=yes" });
             var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
@@ -54,7 +57,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_SpaceSeparatedShortNameOption_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "-f", "gh" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-f", "gh" });
             var underTest = new Option<Options, string>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
@@ -62,7 +65,7 @@ namespace Parsimony.Tests
         [Fact]
         public void CanParse_SpaceSeparatedLongNameOption_ReturnsTrue()
         {
-            var context = new ParseContext<Options>(new Options(false, ""), Array.Empty<string>(), new[] { "--foo", "gh" });
+            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo", "gh" });
             var underTest = new Option<Options, string>(new OptionName('f', "foo"));
             Assert.True(underTest.CanParse(context));
         }
