@@ -14,7 +14,7 @@ namespace Parsimony
         private readonly string[] _optionSelectors;
 
         private bool IsFlag { get; } = typeof(TValue) == typeof(bool);
-        private bool IsOption => !IsFlag;
+        private bool IsValueOption => !IsFlag;
 
         /// <summary>
         /// The option's name.
@@ -60,55 +60,94 @@ namespace Parsimony
 
         private NameAndValueResult ParseNameAndValue(IEnumerable<string> input)
         {
-            var tokens = input.ToList();
+            var tokens = input.ToList() as IReadOnlyList<string>;
 
             if (tokens.Count == 0)
                 return new NameAndValueResult(null, input);
 
-            // Standalone flag
-            // If we find a short-name or long-name flag we're done.
-            if (IsFlag && _optionSelectors.Contains(tokens[0]))
-                return new NameAndValueResult(new NameAndValue(tokens[0], "true"), tokens.Skip(1));
+            return ParseStandaloneFlag(tokens)
+                ?? ParseAdjoinedShortNameFlag(tokens)
+                ?? ParseSpaceSeparatedOptionAndValue(tokens)
+                ?? ParseAdjoinedShortNameOptionAndValue(tokens)
+                ?? ParseEqualsJoinedOptionAndValue(tokens)
+                ?? new NameAndValueResult(null, input);
+        }
 
-            // Adjoined short-name flag
-            // If we find a short-name flag on the front of a token then we need to extract the flag and leave the rest
-            // of the short-name options in the token.
-            if (IsFlag && _shortSelector != null && tokens[0].StartsWith(_shortSelector))
+        private NameAndValueResult? ParseStandaloneFlag(IReadOnlyList<string> tokens)
+        {
+            // A standalone flag is token that contains only the short or long name selector of a flag type option.
+            if (IsFlag && _optionSelectors.Contains(tokens[0]))
             {
-                tokens[0] = $"-{tokens[0].Substring(2)}";
-                return new NameAndValueResult(new NameAndValue(_shortSelector, "true"), tokens);
+                // Consume the first token as the name and provide a value of "true".
+                return new NameAndValueResult(new NameAndValue(tokens[0], "true"), tokens.Skip(1));
             }
 
-            // Equals-joined long-name flags work the same as equals-joined long-name options and they're handled
-            // together below.
+            return null;
+        }
 
-            // NOTE: Some of the type guards below are redundant because of the flag hanlding above, but they're left
-            // in place so that each of the expressions are valid on their own.
+        private NameAndValueResult? ParseAdjoinedShortNameFlag(IReadOnlyList<string> tokens)
+        {
+            // An adjoined short name flag is a token that begins with the short name selector of a flag type option
+            // and has additional characters appended. The additional characters must be the short names of zero or
+            // more additional flag type options optionally followed by the short name of a value type option which is
+            // then followed optionally by the value for said option, but this condition will be enforce incrementally
+            // as those characters are consumed.
+            if (IsFlag && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
+            {
+                // Replace the first token with a hyphen prepended to the characters following the short name selector
+                // and return the short name selector as the name and a value of "true".
+                var input = new List<string> { $"-{tokens[0].Substring(2)}" };
+                input.AddRange(tokens.Skip(1));
+                return new NameAndValueResult(new NameAndValue(_shortSelector, "true"), input);
+            }
 
-            // Space separated option and value
-            // If we find a short-name or long-name option then we need to consume the next token to get the value.
-            if (IsOption && _optionSelectors.Contains(tokens[0]) && tokens.Count >= 2)
+            return null;
+        }
+
+        private NameAndValueResult? ParseSpaceSeparatedOptionAndValue(IReadOnlyList<string> tokens)
+        {
+            // A space-separated option and value is token that contains only the short or long name selector of a
+            // value type option followed by a token than contains the options's value.
+            if (IsValueOption && _optionSelectors.Contains(tokens[0]) && tokens.Count >= 2)
+            {
+                // Consume the first two tokens as the name and value respectively.
                 return new NameAndValueResult(new NameAndValue(tokens[0], tokens[1]), tokens.Skip(2));
+            }
 
-            // Adjoined short-name option and value
-            // If we find a short-name option on the front of a token then the rest of the token is the value.
-            if (IsOption && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
+            return null;
+        }
+
+        private NameAndValueResult? ParseAdjoinedShortNameOptionAndValue(IReadOnlyList<string> tokens)
+        {
+            // An adjoined short name option and value is a token that begins with the short name selector of a value
+            // type option and has additional characters that constitue the option's value.
+            if (IsValueOption && _shortSelector != null && tokens[0].StartsWith(_shortSelector) && tokens[0].Length > 2)
+            {
+                // Consume the first 2 characters of the first token as the name, and the remained of that token as the
+                // value.
                 return new NameAndValueResult(new NameAndValue(_shortSelector, tokens[0].Substring(2)), tokens.Skip(1));
+            }
 
-            // Equals-joined long-name option/flag and value
-            // If we find a long-name option or flag joined to a value by an equals sign then everything after the
-            // equals sign is the value.
+            return null;
+        }
+
+        private NameAndValueResult? ParseEqualsJoinedOptionAndValue(IReadOnlyList<string> tokens)
+        {
+            // An equals-joined option and value is a token that begins with the long name selector of an option
+            // followed by an '=' then followed by the options value.
             if (_longSelector != null)
             {
                 var prefix = $"{_longSelector}=";
                 if (tokens[0].StartsWith(prefix) && tokens[0].Length > prefix.Length)
                 {
+                    // Consume the first token and return the long name selector as the name and everything after the
+                    // first '=' as the value.
                     return new NameAndValueResult(
                         new NameAndValue(_longSelector, tokens[0].Substring(prefix.Length)), tokens.Skip(1));
                 }
             }
 
-            return new NameAndValueResult(null, input);
+            return null;
         }
 
         private class NameAndValue
