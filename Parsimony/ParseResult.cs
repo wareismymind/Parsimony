@@ -16,12 +16,12 @@ namespace Parsimony
         /// </summary>
         /// <remarks>
         /// If the parsing is successful the context should reflect the result. If parsing failed the context should be
-        /// unchanged compared to the context that was input the parse operation.
+        /// unchanged compared to the context that was input to the parse operation.
         /// </remarks>
         public ParseContext<TOptions> Context { get; }
 
         /// <summary>
-        /// The error the occured, if any, during parsing.
+        /// The error that occured, if any, during parsing.
         /// </summary>
         public TError? Error { get; }
 

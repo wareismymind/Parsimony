@@ -25,7 +25,7 @@ namespace Parsimony
         public string? LongName { get; }
 
         /// <summary>
-        /// The option's
+        /// A description of the names that can be used to refer to the option.
         /// </summary>
         public string DescriptiveName { get;  }
 
