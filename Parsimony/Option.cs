@@ -63,8 +63,36 @@ namespace Parsimony
         /// <returns>A <see cref="ParseResult{TOptions, TError}"/>.</returns>
         public ParseResult<TOptions, string> Parse(ParseContext<TOptions> context)
         {
-            return new ParseResult<TOptions, string>(context, "not implemented");
+            if (context == null) throw new ArgumentNullException(nameof(context));
+
+            // TODO: Maybe expand the ParseResult type to indicate no match and ditch CanParse? ugh
+            var nvResult = ParseNameAndValue(context.Input);
+            if (nvResult.NameAndValue == null)
+                throw new ArgumentException("Cannot parse Input", nameof(context));
+
+            var name = nvResult.NameAndValue.Name;
+            var value = nvResult.NameAndValue.Value;
+
+            TValue parsedValue;
+            try
+            {
+                parsedValue = _valueParser(value);
+            }
+            catch (Exception ex)
+            {
+                return new ParseResult<TOptions, string>(context, ex.Message);
+            }
+
+            var assignments = context.Assignments.ToList();
+            assignments.Add(opts =>
+            {
+                _assignment(opts, parsedValue);
+            });
+
+            return new ParseResult<TOptions, string>(
+                new ParseContext<TOptions>(assignments, context.Arguments, nvResult.Input));
         }
+
 
         private NameAndValueResult ParseNameAndValue(IEnumerable<string> input)
         {

@@ -1,12 +1,23 @@
 ﻿using Moq;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Parsimony.Tests
 {
     public class TestOption_Parse
     {
+        [Fact]
+        public void Parse_NullContext_Throws()
+        {
+            var parse = new Mock<Func<string, bool>>();
+            var assign = new Mock<Action<Opts, bool>>();
+            var underTest = new Option<Opts, bool>(new OptionName('f', "foo"), parse.Object, assign.Object);
+
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Assert.Throws<ArgumentNullException>("context", () => underTest.Parse(null));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
         [Fact]
         public void Parse_StandaloneShortNameFlag_ParsesAndAssigns()
         {
