@@ -31,38 +31,10 @@ namespace Parsimony.ParserBuilder
 
         public OptionBuilder(string longName, Expression<Func<TCommand, TProp>> selector)
         {
-            Name = new OptionName(shortName);
+            Name = new OptionName(longName);
             _selector = GetMemberExpression(selector);
         }
-
-        private OptionBuilder(char? shortName, string? longName, Expression<Func<TCommand, TProp>> selector)
-        {
-            if (shortName == null)
-            {
-                
-            }
-
-            Name = new OptionName(shortName, longName);
-
-            if (shortName == null && longName == null)
-                throw new ArgumentException($"Both {nameof(shortName)} and {nameof(longName)} cannot be null");
-
-            if (shortName != null && !char.IsLetter(shortName.Value))
-                throw new ArgumentException("Must be a letter", nameof(shortName));
-
-            if (string.IsNullOrWhiteSpace(longName))
-                throw new ArgumentException("Cannot be null or whitespace");
-
-
-
-            ShortName = shortName;
-            LongName = longName;
-
-            _selector = GetMemberExpression(selector);
-
-            //CN -- Stuff to do with the selector
-        }
-
+        
         private MemberExpression GetMemberExpression(Expression<Func<TCommand,TProp>> selector)
         {
             if (!(selector is MemberExpression member))
