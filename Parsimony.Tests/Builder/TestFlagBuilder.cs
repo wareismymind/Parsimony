@@ -14,15 +14,21 @@ namespace Parsimony.Tests
 //Disabling nullable for ctor tests
 #nullable disable
         [Fact]
-        public void Construct_LongNameNull_Throws()
+        public void ConstructLongName_LongNameNull_Throws()
         {
             Assert.Throws<ArgumentException>(() => new FlagOptionBuilder<TestDummy>(null as string, x => x.BoolProp));
         }
 
         [Fact]
-        public void Construct_SelectorNull_Throws()
+        public void ConstructLongName_SelectorNull_Throws()
         {
             Assert.Throws<ArgumentException>(() => new FlagOptionBuilder<TestDummy>("waka", null));
+        }
+
+        [Fact]
+        public void ConstructShortName_SelectorNull_Throws()
+        {
+            Assert.Throws<ArgumentException>(() => new FlagOptionBuilder<TestDummy>(null as string, null));
         }
 
 #nullable enable
@@ -32,7 +38,6 @@ namespace Parsimony.Tests
         {
             Assert.Throws<ArgumentException>(() => new FlagOptionBuilder<TestDummy>("waka", x => x.GetMeADoot()));
         }
-
 
     }
 
