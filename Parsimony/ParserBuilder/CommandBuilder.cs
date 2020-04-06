@@ -24,32 +24,17 @@ namespace Parsimony.ParserBuilder
             Name = name;
         }
 
-        public OptionBuilder<TCommand, TProp> AddOption<TProp>(char shortName, Expression<Func<TCommand, TProp>> selector)
-        {
-            throw new NotImplementedException();
-
-        }
-
-        //public CommandBuilder<T> AddOption<TProp>(char shortName, Expression<Func<T, TProp>> selector)
-        //{
-        //    return this;
-        //}
-
-        public IOptionBuilder<TCommand, bool> AddFlag(char shortName, Expression<Func<TCommand, bool>> selector)
-        {
-            var builder = new FlagOptionBuilder<TCommand>(shortName);
-            return this;
-        }
-
         public IOptionBuilder<TCommand, bool> AddFlag<TProp>(string longName, Expression<Func<TCommand, bool>> selector)
         {
-            var builder = new OptionBuilder<TCommand, TProp>(longName);
-            return this;
+            var builder = new FlagOptionBuilder<TCommand>(longName, selector);
+            _builders.Add(builder);
+            return builder;
         }
 
         public IOptionBuilder<TCommand, bool> AddFlag(char shortName, Expression<Func<TCommand, bool>> selector)
         {
-            var builder = new FlagOptionBuilder<TCommand>(shortName);
+            var builder = new FlagOptionBuilder<TCommand>(shortName, selector);
+            _builders.Add(builder);
             return builder;
         }
     }
@@ -58,8 +43,8 @@ namespace Parsimony.ParserBuilder
     {
         char? ShortName { get; set; }
         string? LongName { get; set; }
-        public List<string> Precludes { get; }
-        public List<string> Requires { get; } 
+        List<string> Precludes { get; }
+        List<string> Requires { get; } 
         
         IOptionParser Build();
     }
@@ -73,6 +58,8 @@ namespace Parsimony.ParserBuilder
         public List<string> Precludes { get; } = new List<string>();
         public List<string> Requires { get; } = new List<string>();
 
+        //TODO:CN -- HelpBuilder
+
         public IOptionParser Build() => throw new NotImplementedException();
 
 
@@ -81,20 +68,29 @@ namespace Parsimony.ParserBuilder
             if (!char.IsLetter(shortName))
                 throw new ArgumentException("Must be a character", nameof(shortName));
 
-            if (!(selector is MemberExpression member))
-                throw new ArgumentException("Must be a member selector expression");
+            var member = AssertIsMemberExpression(selector);
 
             MemberName = member.Member.Name;
-
             ShortName = shortName;
         }
 
-        public OptionBuilder(string longName)
+        public OptionBuilder(string longName, Expression<Func<TCommand, TProp>> selector)
         {
             if (string.IsNullOrWhiteSpace(longName))
                 throw new ArgumentException("Cannot be null or whitespace", nameof(longName));
 
+            var member = AssertIsMemberExpression(selector);
+
+            MemberName = member.Member.Name;
             LongName = longName;
+        }
+
+        private MemberExpression AssertIsMemberExpression(Expression<Func<TCommand,TProp>> selector)
+        {
+            if (!(selector is MemberExpression member))
+                throw new ArgumentException("Must be a member selector expression");
+
+            return member;
         }
     }
 
@@ -108,15 +104,13 @@ namespace Parsimony.ParserBuilder
 
     public class FlagOptionBuilder<TCommand> : OptionBuilder<TCommand, bool>
     {
-        public FlagOptionBuilder(char shortName)
-        {
+        public FlagOptionBuilder(char shortName, Expression<Func<TCommand, bool>> selector) 
+            : base(shortName, selector)
+        { }
 
-        }
-
-        public FlagOptionBuilder(string longName)
-        {
-
-        }
+        public FlagOptionBuilder(string longName, Expression<Func<TCommand, bool>> selector) 
+            : base(longName, selector)
+        { }
     }
 
     public class Rule<TCommand, TSource, TTarget>
