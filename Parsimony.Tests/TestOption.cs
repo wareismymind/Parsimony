@@ -5,90 +5,51 @@ namespace Parsimony.Tests
 {
     public class TestOption
     {
-        private readonly Action<Options>[] _assignments = Array.Empty<Action<Options>>();
-        private readonly string[] _emptyStrings = Array.Empty<string>();
+        private const char _shortName = 'f';
+        private const string _longName = "foo";
+        private readonly OptionName _name = new OptionName(_shortName, _longName);
+        private readonly Func<string, bool> _parseFlag = s => false;
+        private readonly Action<Opts, bool> _assignFlag = (o, v) => { };
 
         [Fact]
         public void Ctor_NullName_Throws()
         {
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            Assert.Throws<ArgumentNullException>("name", () => _ = new Option<object, string>(null));
+            Assert.Throws<ArgumentNullException>(
+                "name", () => _ = new Option<Opts, bool>(null, _parseFlag, _assignFlag));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
+        [Fact]
+        public void Ctor_NullValueParser_Throws()
+        {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Assert.Throws<ArgumentNullException>(
+                "valueParser", () => _ = new Option<Opts, bool>(_name, null, _assignFlag));
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+        }
+
+        [Fact]
+        public void Ctor_Assignment_Throws()
+        {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            Assert.Throws<ArgumentNullException>(
+                "assignment", () => _ = new Option<Opts, bool>(_name, _parseFlag, null));
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
 
         [Fact]
         public void Ctor_ValidArgs_Constructs()
         {
-            var _ = new Option<object, string>(new OptionName('a', "foo"));
+            var _ = new Option<Opts, bool>(_name, _parseFlag, _assignFlag);
         }
 
         [Fact]
-        public void CanParse_StandaloneShortNameFlag_ReturnsTrue()
+        public void Name_Constructed_HasExpectedValue()
         {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-f" });
-            var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_StandaloneLongNameFlag_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo" });
-            var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_AdjoinedShortNameFlag_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-fgh" });
-            var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_SpaceSeparatedShortNameOptionAndValue_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-f", "gh" });
-            var underTest = new Option<Options, string>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_SpaceSeparatedLongNameOptionAndValue_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo", "gh" });
-            var underTest = new Option<Options, string>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_AdjoinedShortNameOptionAndValue_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "-fgh" });
-            var underTest = new Option<Options, string>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        [Fact]
-        public void CanParse_EqualsJoinedLongNameFlag_ReturnsTrue()
-        {
-            var context = new ParseContext<Options>(_assignments, _emptyStrings, new[] { "--foo=yes" });
-            var underTest = new Option<Options, bool>(new OptionName('f', "foo"));
-            Assert.True(underTest.CanParse(context));
-        }
-
-        class Options
-        {
-            public bool Flag { get; private set; }
-
-            public string Value { get; private set; }
-
-            public Options(bool flag, string value)
-            {
-                Flag = flag;
-                Value = value ?? throw new ArgumentNullException(nameof(value));
-            }
+            var underTest = new Option<Opts, bool>(_name, _parseFlag, _assignFlag);
+            Assert.Equal(_name.ShortName, underTest.Name.ShortName);
+            Assert.Equal(_name.LongName, underTest.Name.LongName);
         }
     }
 }

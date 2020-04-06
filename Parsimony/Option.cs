@@ -16,6 +16,9 @@ namespace Parsimony
         private bool IsFlag { get; } = typeof(TValue) == typeof(bool);
         private bool IsValueOption => !IsFlag;
 
+        private readonly Func<string, TValue> _valueParser;
+        private readonly Action<TOptions, TValue> _assignment;
+
         /// <summary>
         /// The option's name.
         /// </summary>
@@ -25,12 +28,18 @@ namespace Parsimony
         /// Creates a new <see cref="Option{TOptions, TValue}"/>.
         /// </summary>
         /// <param name="name">The option's name.</param>
+        /// <param name="valueParser">The function to use when parsing the option's value.</param>
+        /// <param name="assignment">
+        /// The function to use to assign the parsed value into the <typeparamref name="TOptions"/>.
+        /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="name"/> is <c>null</c>.
+        /// <paramref name="name"/>, <paramref name="valueParser"/>, or <paramref name="assignment"/> is <c>null</c>.
         /// </exception>
-        public Option(OptionName name)
+        public Option(OptionName name, Func<string, TValue> valueParser, Action<TOptions, TValue>  assignment)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            _valueParser = valueParser ?? throw new ArgumentNullException(nameof(valueParser));
+            _assignment = assignment ?? throw new ArgumentNullException(nameof(assignment));
 
             _shortSelector = Name.ShortName != null ? $"-{Name.ShortName}" : null;
             _longSelector = Name.LongName != null ? $"--{Name.LongName}" : null;
@@ -54,7 +63,6 @@ namespace Parsimony
         /// <returns>A <see cref="ParseResult{TOptions, TError}"/>.</returns>
         public ParseResult<TOptions, string> Parse(ParseContext<TOptions> context)
         {
-
             return new ParseResult<TOptions, string>(context, "not implemented");
         }
 
