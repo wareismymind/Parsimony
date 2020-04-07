@@ -18,24 +18,24 @@ namespace Parsimony.ParserBuilder
         }
 
 
-        public static IOptionBuilder<TOptions, TProp> Precludes<TOptions, TProp, TTarget>( 
-            this IOptionBuilder<TOptions, TProp> optionBuilder,
+        public static IOptionBuilder<TOptions, TProp> Precludes<TOptions, TProp, TTarget>(
+            this OptionBuilder<TOptions, TProp> optionBuilder,
             Expression<Func<TOptions, TTarget>> expression)
         {
             var selector = new PropertySelector<TOptions, TTarget>(expression);
-            var precluded = selector.MemberName;
-            optionBuilder.Precludes.Add(precluded);
+            var rule = new Rule(RuleKind.Precludes, optionBuilder.Selector.MemberName, selector.MemberName);
+            optionBuilder.Rules.Add(rule);
 
             return optionBuilder;
         }
 
         public static IOptionBuilder<TOptions, TProp> Requires<TOptions, TProp, TTarget>(
-            this IOptionBuilder<TOptions, TProp> optionBuilder,
+            this OptionBuilder<TOptions, TProp> optionBuilder,
             Expression<Func<TOptions, TTarget>> expression)
         {
             var selector = new PropertySelector<TOptions, TTarget>(expression);
-            var requires = selector.MemberName;
-            optionBuilder.Requires.Add(requires);
+            var rule = new Rule(RuleKind.Requires, optionBuilder.Selector.MemberName, selector.MemberName);
+            optionBuilder.Rules.Add(rule);
 
             return optionBuilder;
         }

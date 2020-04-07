@@ -73,14 +73,22 @@ namespace Parsimony.Tests.Builder
         public void Precludes_ValidMemberSelector_AddsNameToPrecludesList()
         {
             _longNameBuilder.Precludes(x => x.StringProp);
-            Assert.Contains(_longNameBuilder.Precludes, x => x == "StringProp");
+            var rule = _longNameBuilder.Rules.Single();
+            
+            Assert.Equal("IntProp", rule.PropertyName);
+            Assert.Equal("StringProp", rule.Target);
+            Assert.Equal(RuleKind.Precludes, rule.Kind);
         }
 
         [Fact]
         public void Requires_ValidMemberSelector_AddsNameToPrecludesList()
         {
             _longNameBuilder.Requires(x => x.StringProp);
-            Assert.Contains(_longNameBuilder.Requires, x => x == "StringProp");
+            
+            var rule = _longNameBuilder.Rules.Single();
+            Assert.Equal("IntProp", rule.PropertyName);
+            Assert.Equal("StringProp", rule.Target);
+            Assert.Equal(RuleKind.Requires, rule.Kind);
         }
     }
 }

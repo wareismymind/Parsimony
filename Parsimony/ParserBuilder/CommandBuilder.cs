@@ -14,7 +14,7 @@ namespace Parsimony.ParserBuilder
         public string Name { get; }
         public string HelpText { get; } = "";
 
-        private IList<IOptionBuilder> _builders = new List<IOptionBuilder>();
+        private readonly IList<IOptionBuilder> _builders = new List<IOptionBuilder>();
 
         public CommandBuilder(string name)
         {
@@ -41,9 +41,8 @@ namespace Parsimony.ParserBuilder
 
     public interface IOptionBuilder
     {
-        List<string> Precludes { get; }
-        List<string> Requires { get; } 
-        
+        List<Rule> Rules { get; }
+
         char? ShortName { get; set; }
         string? LongName { get; set; }
 
@@ -56,4 +55,37 @@ namespace Parsimony.ParserBuilder
     }
 
     public interface IOptionParser { }
+
+
+    public class OptionParserBuildResult
+    {
+        IOptionParser Parser { get; set; }
+        IEnumerable<Rule> Rules { get; set; } = new List<Rule>();
+    }
+
+
+    //TODO:CN -- Can probably just make into a bunch of separate types and pattern match 
+    // on them for the impls
+    public class Rule
+    {
+        public string PropertyName { get; }
+        public string? Target { get; }
+        public RuleKind Kind { get; }
+
+        public Rule(RuleKind kind, string propertyName, string? target)
+        {
+            //CN: Check for stuff
+            Kind = kind;
+            PropertyName = propertyName;
+            Target = target;
+        }
+    }
+
+    public enum RuleKind
+    {
+        Precludes,
+        Requires,
+        Implies
+    }
+   
 }

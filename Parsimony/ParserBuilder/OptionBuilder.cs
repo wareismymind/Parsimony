@@ -6,8 +6,7 @@ namespace Parsimony.ParserBuilder
 {
     public class OptionBuilder<TCommand, TProp> : IOptionBuilder<TCommand, TProp>
     {
-        public List<string> Precludes { get; } = new List<string>();
-        public List<string> Requires { get; } = new List<string>();
+        public List<Rule> Rules { get; } = new List<Rule>();
 
         internal PropertySelector<TCommand,TProp> Selector { get; }
         internal OptionName? Name { get; set; }
