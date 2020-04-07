@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Parsimony.ParserBuilder
 {
@@ -21,22 +17,28 @@ namespace Parsimony.ParserBuilder
             return optionBuilder;
         }
 
-        
-        public static T Precludes<T, TOptions,TProp>(
-            this T optionBuilder,
-            Expression<Func<TOptions,TProp>> expression )
-            where T : IOptionBuilder<T,TOptions>
+
+        public static IOptionBuilder<TOptions, TProp> Precludes<TOptions, TProp, TTarget>( 
+            this IOptionBuilder<TOptions, TProp> optionBuilder,
+            Expression<Func<TOptions, TTarget>> expression)
         {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-
-            if (!(expression is MemberExpression mbr))
-                throw new ArgumentException("Expression must be member access expression", nameof(expression));
-
-            var precluded = mbr.Member.Name;
+            var selector = new PropertySelector<TOptions, TTarget>(expression);
+            var precluded = selector.MemberName;
             optionBuilder.Precludes.Add(precluded);
 
             return optionBuilder;
         }
+
+        public static IOptionBuilder<TOptions, TProp> Requires<TOptions, TProp, TTarget>(
+            this IOptionBuilder<TOptions, TProp> optionBuilder,
+            Expression<Func<TOptions, TTarget>> expression)
+        {
+            var selector = new PropertySelector<TOptions, TTarget>(expression);
+            var requires = selector.MemberName;
+            optionBuilder.Requires.Add(requires);
+
+            return optionBuilder;
+        }
+
     }
 }

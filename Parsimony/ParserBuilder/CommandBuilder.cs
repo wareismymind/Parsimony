@@ -44,32 +44,15 @@ namespace Parsimony.ParserBuilder
         List<string> Precludes { get; }
         List<string> Requires { get; } 
         
+        char? ShortName { get; set; }
+        string? LongName { get; set; }
+
         IOptionParser Build();
     }
 
     public interface IOptionBuilder<TCommand, TProp> : IOptionBuilder
     {
 
-    }
-
-    public class Rule<TCommand, TSource, TTarget>
-    {
-        private string _sourceName;
-        private string _targetName;
-
-        public Rule(
-            Expression<Func<TCommand, TSource>> sourceSelector,
-            Expression<Func<TCommand, TTarget>> targetSelector,
-            RuleKind kind)
-        {
-
-        }
-    }
-
-    public enum RuleKind
-    {
-        Preclude,
-        Require
     }
 
     public interface IOptionParser { }
