@@ -5,35 +5,39 @@ namespace Parsimony.ParserBuilder
 {
     public static class OptionBuilderExtensions
     {
-        public static T WithLongName<T>(this T optionBuilder, string longName) where T : IOptionBuilder
+        public static OptionBuilder<TOption, TProp> WithLongName<TOption, TProp>(this OptionBuilder<TOption, TProp> builder, string longName)
+            where TOption : notnull
         {
-            optionBuilder.LongName = longName;
-            return optionBuilder;
+            builder.LongName = longName;
+            return builder;
         }
 
-        public static T WithShortName<T>(this T optionBuilder, char shortName) where T : IOptionBuilder
+        public static OptionBuilder<TOption, TProp> WithShortName<TOption, TProp>(this OptionBuilder<TOption, TProp> builder, char shortName)
+            where TOption : notnull
         {
-            optionBuilder.ShortName = shortName;
-            return optionBuilder;
+            builder.ShortName = shortName;
+            return builder;
         }
 
 
-        public static IOptionBuilder<TOptions, TProp> Precludes<TOptions, TProp, TTarget>(
-            this OptionBuilder<TOptions, TProp> optionBuilder,
-            Expression<Func<TOptions, TTarget>> expression)
+        public static OptionBuilder<TOption, TProp> Precludes<TOption, TProp, TTarget>(
+            this OptionBuilder<TOption, TProp> optionBuilder,
+            Expression<Func<TOption, TTarget>> expression)
+            where TOption : notnull
         {
-            var selector = new PropertySelector<TOptions, TTarget>(expression);
+            var selector = new PropertySelector<TOption, TTarget>(expression);
             var rule = new Rule(RuleKind.Precludes, optionBuilder.Selector.MemberName, selector.MemberName);
             optionBuilder.Rules.Add(rule);
 
             return optionBuilder;
         }
 
-        public static IOptionBuilder<TOptions, TProp> Requires<TOptions, TProp, TTarget>(
-            this OptionBuilder<TOptions, TProp> optionBuilder,
-            Expression<Func<TOptions, TTarget>> expression)
+        public static OptionBuilder<TOption, TProp> Requires<TOption, TProp, TTarget>(
+            this OptionBuilder<TOption, TProp> optionBuilder,
+            Expression<Func<TOption, TTarget>> expression)
+            where TOption : notnull
         {
-            var selector = new PropertySelector<TOptions, TTarget>(expression);
+            var selector = new PropertySelector<TOption, TTarget>(expression);
             var rule = new Rule(RuleKind.Requires, optionBuilder.Selector.MemberName, selector.MemberName);
             optionBuilder.Rules.Add(rule);
 

@@ -29,7 +29,6 @@ namespace Parsimony.ParserBuilder
             if (!prop.CanWrite)
                 throw new ArgumentException("Property must be readable and writable");
 
-
             var instance = Expression.Parameter(typeof(TInput));
             var value = Expression.Parameter(typeof(TProp));
             var setterBody = Expression.Call(instance, prop.GetSetMethod(),value);

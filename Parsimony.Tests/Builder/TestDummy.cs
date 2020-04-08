@@ -6,6 +6,8 @@
         public string? StringProp { get; set; }
         public int IntProp { get; set; }
 
+        public NoTypeConverter NoConverter { get; set; }
+
         public bool GetMeADoot() => true;
 
         public int DoTheSet
@@ -17,7 +19,10 @@
 
         public int NotAProperty;
 
-
         private int _toBeSet;
+
+
     }
+
+    public class NoTypeConverter { }
 }

@@ -12,7 +12,6 @@ namespace Parsimony.Tests.Builder
     {
         private readonly OptionBuilder<TestDummy, int> _longNameBuilder = new OptionBuilder<TestDummy, int>("doot", x => x.IntProp);
         private readonly OptionBuilder<TestDummy, int> _shortNameBuilder = new OptionBuilder<TestDummy, int>('d', x => x.IntProp);
-        private readonly OptionBuilder<TestDummy, int> _emptyBuilder = new OptionBuilder<TestDummy, int>(x => x.IntProp);
 
 
         [Fact]
@@ -50,16 +49,6 @@ namespace Parsimony.Tests.Builder
         {
             _shortNameBuilder.WithLongName("doot");
             Assert.Equal("doot", _shortNameBuilder.LongName);
-        }
-
-        [Fact]
-        public void WithBothNames_BothNamesvalid_SetsBothNames()
-        {
-            _emptyBuilder.WithLongName("doot")
-                .WithShortName('d');
-
-            Assert.Equal("doot", _emptyBuilder.LongName);
-            Assert.Equal('d', _emptyBuilder.ShortName);
         }
 
         [Fact]
