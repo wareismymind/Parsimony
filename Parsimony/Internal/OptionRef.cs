@@ -85,7 +85,7 @@ namespace Parsimony.Internal
             if (optionName == null)
                 // TODO: Create LogicErrorException
                 throw new Exception("LOGIC ERROR: option name in option ref regex is not a valid option name");
-            
+
 
             if (match.Groups["next"].Success)
             {
@@ -119,7 +119,7 @@ namespace Parsimony.Internal
             if (match.Groups["value"].Success)
             {
                 var next = match.Groups["value"].Value;
-                var optionRef =  new OptionRef(optionName, next, JoinType.Equals);
+                var optionRef = new OptionRef(optionName, next, JoinType.Equals);
                 return (optionRef, input.Skip(1));
             }
 

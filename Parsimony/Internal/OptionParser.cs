@@ -46,7 +46,7 @@ namespace Parsimony.Internal
                 if (option == null)
                     throw new Exception($"Unknown option '{optionName}'");
 
-                
+
                 // TODO: Express this better :/
 
                 // An explicit value can only be assigned to an option with long-name/equals, default is "true"
