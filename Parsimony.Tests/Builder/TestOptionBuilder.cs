@@ -55,8 +55,8 @@ namespace Parsimony.Tests
         public void ConstructBothNames_BothNamesDefined_ConstructsWithNames()
         {
             var underTest = new OptionBuilder<TestDummy, bool>('w', "waka", x => x.BoolProp);
-            Assert.Equal("waka", underTest.LongName);
-            Assert.Equal('w', underTest.ShortName);
+            Assert.Equal("waka", underTest?.LongName ?? "");
+            Assert.Equal("w", underTest?.ShortName ?? "");
 
         }
 

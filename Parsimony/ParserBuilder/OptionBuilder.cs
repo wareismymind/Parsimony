@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Parsimony.Internal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,27 +11,29 @@ namespace Parsimony.ParserBuilder
         where TOption : notnull
     {
         public List<Rule> Rules { get; } = new List<Rule>();
-        public char? ShortName
+        internal OptionName.Short? ShortName
         {
-            get => Name?.ShortName;
+            get => _shortName;
             set
             {
-                if (Name?.ShortName != null) throw new InvalidOperationException();
-                SetName(value, LongName);
+                if (_shortName != null) throw new InvalidOperationException();
+                _shortName = value;
             }
         }
-        public string? LongName
+        internal OptionName.Long? LongName
         {
-            get => Name?.LongName;
+            get => _longName;
             set
             {
-                if (Name?.LongName != null) throw new InvalidOperationException();
-                SetName(ShortName, value);
+                if (_longName != null) throw new InvalidOperationException();
+                _longName = value;
             }
         }
         
         internal PropertySelector<TOption, TProp> Selector { get; }
-        internal OptionName Name { get; set; }
+        
+        private OptionName.Short? _shortName;
+        private OptionName.Long? _longName;
         
         internal Func<string,TProp>? Parser { get; set; }
 
@@ -59,7 +62,7 @@ namespace Parsimony.ParserBuilder
                 Parser = (string input) => (TProp)converter.ConvertFromString(input);
             }
 
-            var opt = new Option<TOption, TProp>(Name, Parser, Selector.Setter);
+            var opt = new Option<TOption, TProp>(_shortName, _longName, Parser, Selector.Setter);
 
             return new OptionParserBuildResult<TOption>(opt, Rules);
         }
@@ -80,31 +83,21 @@ namespace Parsimony.ParserBuilder
 
         public OptionBuilder(char shortName, string longName, Expression<Func<TOption, TProp>> selector)
         {
-            Name = new OptionName(shortName, longName);
+            _shortName = OptionName.Parse(shortName.ToString()) as OptionName.Short;
+            _longName = OptionName.Parse(longName) as OptionName.Long;
             Selector = new PropertySelector<TOption, TProp>(selector);
         }
 
         public OptionBuilder(char shortName, Expression<Func<TOption, TProp>> selector)
         {
-            Name = new OptionName(shortName);
+            _shortName = OptionName.Parse(shortName.ToString()) as OptionName.Short;
             Selector = new PropertySelector<TOption, TProp>(selector);
         }
 
         public OptionBuilder(string longName, Expression<Func<TOption, TProp>> selector)
         {
-            Name = new OptionName(longName);
+            _longName = OptionName.Parse(longName) as OptionName.Long;
             Selector = new PropertySelector<TOption, TProp>(selector);
-        }
-
-        private void SetName(char? shortName, string? longName)
-        {
-            Name  = (shortName, longName) switch
-            {
-                (null, string l) => new OptionName(l),
-                (char s, null) => new OptionName(s),
-                (char s, string l) => new OptionName(s, l),
-                _ => throw new ArgumentNullException("Both names cannot be null")
-            };
         }
         
     }

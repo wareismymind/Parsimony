@@ -1,4 +1,5 @@
-﻿using Parsimony.ParserBuilder;
+﻿using Parsimony.Internal;
+using Parsimony.ParserBuilder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Parsimony.Tests.Builder
         [Fact]
         public void WithLongName_InvalidName_Throws()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _shortNameBuilder.WithLongName("123"));
+            Assert.Throws<ArgumentException>(() => _shortNameBuilder.WithLongName("123"));
         }
 
         [Fact]
@@ -29,7 +30,7 @@ namespace Parsimony.Tests.Builder
         [Fact]
         public void WithShortName_InvalidShortName_Throws()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _longNameBuilder.WithShortName('-'));
+            Assert.Throws<ArgumentException>(() => _longNameBuilder.WithShortName('-'));
         }
 
         [Fact]
@@ -48,14 +49,14 @@ namespace Parsimony.Tests.Builder
         public void WithLongName_ValidName_SetsName()
         {
             _shortNameBuilder.WithLongName("doot");
-            Assert.Equal("doot", _shortNameBuilder.LongName);
+            Assert.Equal(OptionName.Parse("doot"), _shortNameBuilder.LongName);
         }
 
         [Fact]
         public void WithShortName_ValidShortName_SetsName()
         {
             _longNameBuilder.WithShortName('d');
-            Assert.Equal('d', _longNameBuilder.ShortName);
+            Assert.Equal(OptionName.Parse("d"), _longNameBuilder.ShortName);
         }
 
         [Fact]
