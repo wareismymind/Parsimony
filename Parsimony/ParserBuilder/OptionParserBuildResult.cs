@@ -8,8 +8,8 @@ namespace Parsimony.ParserBuilder
     internal class OptionParserBuildResult<TOptions>
         where TOptions : notnull
     {
-        internal IOption<TOptions> Parser { get; set; }
-        internal IEnumerable<Rule> Rules { get; set; } = new List<Rule>();
+        internal IOption<TOptions> Parser { get; }
+        internal IEnumerable<Rule> Rules { get; } = new List<Rule>();
 
         public OptionParserBuildResult(IOption<TOptions> parser, IEnumerable<Rule> rules)
         {

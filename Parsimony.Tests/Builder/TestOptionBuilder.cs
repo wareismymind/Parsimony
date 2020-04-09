@@ -116,13 +116,13 @@ namespace Parsimony.Tests
 
         }
 
-        private OptionBuilder<TestDummy,int> Construct()
+        private OptionBuilder<TestDummy, int> Construct()
         {
             return new OptionBuilder<TestDummy, int>('w', "waka", x => x.IntProp);
         }
 
 
-        
+
 
     }
 }

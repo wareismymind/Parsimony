@@ -119,7 +119,7 @@ namespace Parsimony.Tests.Internal
         {
             // TODO: Find a better way to communicate the parse error
             var expected = new Exception("junko");
-            Func<string, string> throwyParse = s => throw expected;
+            string throwyParse(string s) => throw expected;
             var underTest = new Option<Opts, string>(_valueShortName, null, throwyParse, _assignValue);
             var actual = Assert.Throws<Exception>(() => underTest.Parse("something"));
             Assert.Same(expected, actual);

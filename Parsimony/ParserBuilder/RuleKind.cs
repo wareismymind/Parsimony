@@ -1,9 +1,9 @@
 ﻿namespace Parsimony.ParserBuilder
 {
-    public enum RuleKind
+    internal enum RuleKind
     {
         Precludes,
         Requires,
     }
-   
+
 }

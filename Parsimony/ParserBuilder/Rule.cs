@@ -2,7 +2,7 @@
 {
     //TODO:CN -- Can probably just make into a bunch of separate types and pattern match 
     // on them for the impls
-    public class Rule
+    internal class Rule
     {
         public string PropertyName { get; }
         public string Target { get; }
@@ -16,5 +16,5 @@
             Target = target;
         }
     }
-   
+
 }

@@ -52,7 +52,7 @@ namespace Parsimony.Tests.Builder
 
             underTest.Setter(target, 10);
             var res = underTest.Getter(target);
-            
+
 
             Assert.Equal(nameof(target.IntProp), underTest.MemberName);
             Assert.Equal(target.IntProp, res);
@@ -61,7 +61,7 @@ namespace Parsimony.Tests.Builder
         private PropertySelector<TestDummy, T> Construct<T>(Expression<Func<TestDummy, T>> expression)
         {
             return new PropertySelector<TestDummy, T>(expression);
-        
+
         }
 
     }
