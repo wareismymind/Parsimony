@@ -15,5 +15,4 @@ namespace Parsimony.ParserBuilder
             Rules = rules?.ToList() ?? throw new ArgumentNullException();
         }
     }
-   
 }
