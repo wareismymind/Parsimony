@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using Parsimony.Internal;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace Parsimony.Tests.Internal

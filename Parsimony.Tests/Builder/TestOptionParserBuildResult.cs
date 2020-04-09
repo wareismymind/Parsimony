@@ -2,9 +2,6 @@
 using Parsimony.ParserBuilder;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Parsimony.Tests.Builder
@@ -21,7 +18,7 @@ namespace Parsimony.Tests.Builder
         [Fact]
         public void Construct_RulesNull_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => new OptionParserBuildResult<TestDummy>(new DummyParser() , null));
+            Assert.Throws<ArgumentNullException>(() => new OptionParserBuildResult<TestDummy>(new DummyParser(), null));
         }
 
 #nullable enable

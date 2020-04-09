@@ -1,10 +1,7 @@
 ﻿using Parsimony.Internal;
 using Parsimony.ParserBuilder;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Parsimony.Tests.Builder
@@ -18,7 +15,7 @@ namespace Parsimony.Tests.Builder
         [Fact]
         public void WithLongName_BuilderNull_Throws()
         {
-            var underTest = null as OptionBuilder<string,int>;
+            var underTest = null as OptionBuilder<string, int>;
             Assert.Throws<ArgumentNullException>(() => underTest.WithLongName("doot"));
         }
 
@@ -76,7 +73,7 @@ namespace Parsimony.Tests.Builder
             Assert.Throws<InvalidOperationException>(() => _longNameBuilder.WithLongName("dawt"));
         }
 
-        
+
         [Fact]
         public void WithShortName_InvalidShortName_Throws()
         {
