@@ -134,22 +134,25 @@ namespace Parsimony.ParserBuilder
             if (precludesSet.Any(x => requiredSet.Contains(x)))
                 throw new InvalidOperationException("Cannot both require and preclude a property");
 
-            if (Parser == null)
-            {
-                var converter = TypeDescriptor.GetConverter(typeof(TProp));
-                if (!converter.CanConvertFrom(typeof(string)))
-                {
-                    throw new InvalidOperationException(
-                        $"The given type {typeof(TOption).Name} cannot be converted from string," +
-                        $" specify a parser with the extension method 'WithParser'");
-                }
-
-                Parser = (string input) => (TProp)converter.ConvertFromString(input);
-            }
-
-            var opt = new Option<TOption, TProp>(_shortName, _longName, Parser, Selector.Setter);
+            Parser ??= GetDefaultParser();
+            
+                var opt = new Option<TOption, TProp>(_shortName, _longName, Parser, Selector.Setter);
 
             return new OptionParserBuildResult<TOption>(opt, Rules);
+        }
+
+        private Func<string, TProp> GetDefaultParser()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(TProp));
+            if (!converter.CanConvertFrom(typeof(string)))
+            {
+                throw new InvalidOperationException(
+                    $"The given type {typeof(TOption).Name} cannot be converted from string," +
+                    $" specify a parser with the extension method 'WithParser'");
+            }
+
+            return (string input) => (TProp)converter.ConvertFromString(input);
+
         }
 
         private HashSet<string> EnsureNoDuplicateTargets(IEnumerable<Rule> rules)
