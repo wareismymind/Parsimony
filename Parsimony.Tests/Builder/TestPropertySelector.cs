@@ -33,7 +33,6 @@ namespace Parsimony.Tests.Builder
             Assert.Throws<ArgumentException>(() => Construct(x => x.ReadOnly));
         }
 
-
         [Fact]
         public void Construct_ExpressionIsValidSelector_PostConditionsMet()
         {

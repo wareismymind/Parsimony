@@ -74,9 +74,9 @@ namespace Parsimony.ParserBuilder
         /// <summary>
         /// Constructs a new option builder with the given names
         /// </summary>
-        /// <param name="shortName"> a valid short name flag for the option </param>
+        /// <param name="shortName"> a valid short name for the option </param>
         /// <param name="longName"> a valid long name for the option </param>
-        /// <param name="selector"> The property selector that indicates the property this flag represents on the parent <typeparamref name="TOption"/> </param>
+        /// <param name="selector"> The property selector that indicates the property this option represents on the parent <typeparamref name="TOption"/> </param>
         /// <exception cref="ArgumentException"> <paramref name="shortName"/> or <paramref name="longName"/> are invalid </exception>
         /// <exception cref="ArgumentException"> <paramref name="selector"/> is not a valid <see cref="PropertySelector{TInput, TProp} "/></exception>
         /// <exception cref="ArgumentNullException"> <paramref name="longName"/> or <paramref name="selector"/> are null </exception>
@@ -90,8 +90,8 @@ namespace Parsimony.ParserBuilder
         /// <summary>
         /// Constructs a new option builder with the given short name
         /// </summary>
-        /// <param name="selector"> The property selector that indicates the property this flag represents on the parent <typeparamref name="TOption"/> </param>
-        /// <param name="shortName"> a valid short name flag for the option </param>
+        /// <param name="selector"> The property selector that indicates the property this option represents on the parent <typeparamref name="TOption"/> </param>
+        /// <param name="shortName"> a valid short name for the option </param>
         /// <exception cref="ArgumentException"> <paramref name="shortName"/> is invalid </exception>
         /// <exception cref="ArgumentException"> <paramref name="selector"/> is not a valid <see cref="PropertySelector{TInput, TProp} "/></exception>
         /// <exception cref="ArgumentNullException"> <paramref name="selector"/> is null </exception>
@@ -106,7 +106,7 @@ namespace Parsimony.ParserBuilder
         /// Constructs a new option builder with the given short name
         /// </summary>
         /// <param name="longName"> a valid long name for the option </param>
-        /// <param name="selector"> The property selector that indicates the property this flag represents on the parent <typeparamref name="TOption"/> </param>
+        /// <param name="selector"> The property selector that indicates the property this option represents on the parent <typeparamref name="TOption"/> </param>
         /// <exception cref="ArgumentException"> <paramref name="longName"/> is invalid </exception>
         /// <exception cref="ArgumentException"> <paramref name="selector"/> is not a valid <see cref="PropertySelector{TInput, TProp} "/></exception>
         /// <exception cref="ArgumentNullException"> <paramref name="longName"/> or <paramref name="selector"/> is null </exception>
