@@ -22,12 +22,6 @@ namespace Parsimony.Tests.Builder
         }
 
         [Fact]
-        public void Construct_ExpressionIsNotMemberAccessNodeType_Throws()
-        {
-            Assert.Throws<ArgumentException>(() => Construct(x => (int)x.IntProp));
-        }
-
-        [Fact]
         public void Construct_ExpressionIsNotPropertyAccess_Throws()
         {
             Assert.Throws<ArgumentException>(() => Construct(x => x.NotAProperty));
