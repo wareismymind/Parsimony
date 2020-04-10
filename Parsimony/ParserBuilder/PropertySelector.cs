@@ -37,7 +37,6 @@ namespace Parsimony.ParserBuilder
             if (!(selector.Body is MemberExpression mbr))
                 throw new ArgumentException("Must be a member selector expression");
 
-            //TODO:CN -- Handle convert nodes? casts etc?
             //TODO:CN -- Handle public mutable fields?
             var prop = mbr.Member as PropertyInfo ?? throw new ArgumentException("Member selection must be a property");
 
