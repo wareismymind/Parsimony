@@ -5,14 +5,14 @@ namespace Parsimony.Internal
     /// <summary>
     /// The internal representation of an option within a set.
     /// </summary>
-    /// <typeparam name="TOptions">The type of the option set.</typeparam>
-    /// <typeparam name="TValue">The type of the value of the option.</typeparam>
-    internal class Option<TOptions, TValue>
-        : IOption<TOptions>
-        where TOptions : notnull
+    /// <typeparam name="TOptionSet">The type of the set this option belongs to.</typeparam>
+    /// <typeparam name="TOptionValue">The type of the value of this option.</typeparam>
+    internal class Option<TOptionSet, TOptionValue>
+        : IOption<TOptionSet>
+        where TOptionSet : class
     {
-        private readonly Func<string, TValue> _valueParser;
-        private readonly Action<TOptions, TValue> _assignment;
+        private readonly Func<string, TOptionValue> _valueParser;
+        private readonly Action<TOptionSet, TOptionValue> _assignment;
 
         /// <summary>
         /// The option's short name.
@@ -27,7 +27,7 @@ namespace Parsimony.Internal
         /// <summary>
         /// Indicates whether the option is a flag (bool) type.
         /// </summary>
-        public bool IsFlag { get; } = typeof(TValue) == typeof(bool);
+        public bool IsFlag { get; } = typeof(TOptionValue) == typeof(bool);
 
         /// <summary>
         /// Creates a new <see cref="Option{TOptions, TValue}"/>.
@@ -36,7 +36,7 @@ namespace Parsimony.Internal
         /// <param name="longName">The option's long name.</param>
         /// <param name="parseValue">The function to use when parsing the option's value.</param>
         /// <param name="assignValue">
-        /// The function to use to assign the parsed value into the <typeparamref name="TOptions"/>.
+        /// The function to use to assign the parsed value into the <typeparamref name="TOptionSet"/>.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="parseValue"/> or <paramref name="assignValue"/> is <c>null</c>.
@@ -47,8 +47,8 @@ namespace Parsimony.Internal
         public Option(
             OptionName.Short? shortName,
             OptionName.Long? longName,
-            Func<string, TValue> parseValue,
-            Action<TOptions, TValue> assignValue)
+            Func<string, TOptionValue> parseValue,
+            Action<TOptionSet, TOptionValue> assignValue)
         {
             ShortName = shortName;
             LongName = longName;
@@ -66,7 +66,7 @@ namespace Parsimony.Internal
         /// </summary>
         /// <param name="input">The input to parse.</param>
         /// <returns>An action that assigns the parsed value to an option set.</returns>
-        public Action<TOptions> Parse(string input)
+        public Action<TOptionSet> Parse(string input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             // TODO: Communicate error deliberately

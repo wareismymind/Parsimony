@@ -12,7 +12,7 @@ namespace Parsimony.ParserBuilder
     /// </summary>
     /// <typeparam name="TOption"> The type of options required to execute the command </typeparam>
     public class CommandBuilder<TOption> : IParserBuilder
-        where TOption : notnull
+        where TOption : class
     {
         /// <summary>
         /// The name of the command

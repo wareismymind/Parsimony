@@ -14,7 +14,7 @@ namespace Parsimony.ParserBuilder
     /// <typeparam name="TOption"> The parent object that has a property of type <typeparamref name="TProp"/> </typeparam>
     /// <typeparam name="TProp"> The parent  </typeparam>
     public class OptionBuilder<TOption, TProp> : IOptionBuilder<TOption>
-        where TOption : notnull
+        where TOption : class
     {
         /// <summary>
         /// A list of rules that enforce the logic between <see cref="Option{TOptions, TValue}"/> combinations

@@ -6,7 +6,7 @@ using System.Linq;
 namespace Parsimony.ParserBuilder
 {
     internal class OptionParserBuildResult<TOptions>
-        where TOptions : notnull
+        where TOptions : class
     {
         internal IOption<TOptions> Parser { get; }
         internal IEnumerable<Rule> Rules { get; } = new List<Rule>();

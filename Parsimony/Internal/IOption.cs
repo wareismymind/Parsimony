@@ -5,8 +5,8 @@ namespace Parsimony.Internal
     /// <summary>
     /// The interface for an option within a typed set.
     /// </summary>
-    /// <typeparam name="TOptions">The type of the option set.</typeparam>
-    internal interface IOption<TOptions> where TOptions : notnull
+    /// <typeparam name="TOptionSet">The type of the set this option belongs to.</typeparam>
+    internal interface IOption<TOptionSet> where TOptionSet : class
     {
         /// <summary>
         /// The option's short name.
@@ -28,6 +28,6 @@ namespace Parsimony.Internal
         /// </summary>
         /// <param name="input">The input to parse.</param>
         /// <returns>An action that assigns the parsed value to an option set.</returns>
-        public Action<TOptions> Parse(string input);
+        public Action<TOptionSet> Parse(string input);
     }
 }
