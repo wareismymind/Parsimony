@@ -1,54 +1,52 @@
-﻿using System;
+﻿using Parsimony.Errors;
+using Parsimony.Exceptions;
+using System;
 
 namespace Parsimony.Internal
 {
     /// <summary>
     /// The internal representation of an option within a set.
     /// </summary>
-    /// <typeparam name="TOptions">The type of the option set.</typeparam>
-    /// <typeparam name="TValue">The type of the value of the option.</typeparam>
-    internal class Option<TOptions, TValue>
-        : IOption<TOptions>
-        where TOptions : notnull
+    /// <typeparam name="TOptionSet">The type of the set this option belongs to.</typeparam>
+    /// <typeparam name="TOptionValue">The type of this option's value.</typeparam>
+    internal class Option<TOptionSet, TOptionValue> : IOption<TOptionSet> where TOptionSet : class
     {
-        private readonly Func<string, TValue> _valueParser;
-        private readonly Action<TOptions, TValue> _assignment;
+        private readonly Func<string, TOptionValue> _valueParser;
+        private readonly Action<TOptionSet, TOptionValue> _assignment;
 
-        /// <summary>
-        /// The option's short name.
-        /// </summary>
+        /// <inheritdoc/>
         public OptionName.Short? ShortName { get; }
 
-        /// <summary>
-        /// The option's long name.
-        /// </summary>
+        /// <inheritdoc/>
         public OptionName.Long? LongName { get; }
 
-        /// <summary>
-        /// Indicates whether the option is a flag (bool) type.
-        /// </summary>
-        public bool IsFlag { get; } = typeof(TValue) == typeof(bool);
+        /// <inheritdoc/>
+        public bool IsFlag { get; } = typeof(TOptionValue) == typeof(bool);
 
         /// <summary>
-        /// Creates a new <see cref="Option{TOptions, TValue}"/>.
+        /// Creates a new <see cref="Option{TOptionSet, TOptionValue}"/>.
         /// </summary>
         /// <param name="shortName">The option's short name.</param>
         /// <param name="longName">The option's long name.</param>
-        /// <param name="parseValue">The function to use when parsing the option's value.</param>
+        /// <param name="parseValue">
+        /// The function to use when parsing the option's value. This function should throw an exception to indicate a
+        /// parsing failure. The exceptions message will be used as the message for the
+        /// <see cref="OptionValueFormatError"/> returned by <see cref="GetAssignment(string)"/>.
+        /// </param>
         /// <param name="assignValue">
-        /// The function to use to assign the parsed value into the <typeparamref name="TOptions"/>.
+        /// The function to use to assign the parsed value into the <typeparamref name="TOptionSet"/>.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="parseValue"/> or <paramref name="assignValue"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// Both <paramref name="shortName"/> and <paramref name="longName"/> are <c>null</c>.
+        /// Both <paramref name="shortName"/> and <paramref name="longName"/> are both <c>null</c>.
         /// </exception>
-        public Option(
+        internal Option(
             OptionName.Short? shortName,
             OptionName.Long? longName,
-            Func<string, TValue> parseValue,
-            Action<TOptions, TValue> assignValue)
+            Func<string, TOptionValue> parseValue,
+            Action<TOptionSet, TOptionValue> assignValue)
         {
             ShortName = shortName;
             LongName = longName;
@@ -57,21 +55,35 @@ namespace Parsimony.Internal
             if (ShortName == null && LongName == null)
             {
                 throw new ArgumentException(
-                    $"At least one of {nameof(shortName)} and {nameof(longName)} must be non-null");
+                    $"At least one of {nameof(shortName)} and {nameof(longName)} must be non-null.");
             }
         }
 
-        /// <summary>
-        /// Parses <paramref name="input"/> value and returns an action that assigns the result to an option set.
-        /// </summary>
-        /// <param name="input">The input to parse.</param>
-        /// <returns>An action that assigns the parsed value to an option set.</returns>
-        public Action<TOptions> Parse(string input)
+        /// <inheritdoc/>
+        public (Action<TOptionSet>?, OptionValueFormatError?) GetAssignment(string input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
-            // TODO: Communicate error deliberately
-            var parsedValue = _valueParser(input);
-            return opts => _assignment(opts, parsedValue);
+
+            try
+            {
+                var parsedValue = _valueParser(input);
+                return (opts => _assignment(opts, parsedValue), null);
+            }
+            catch (Exception ex)
+            {
+                // At least one of LongName and ShortName is non-null
+                var name = LongName as OptionName ?? ShortName as OptionName;
+                if (name == null)
+                {
+                    var longNameName = nameof(Option<TOptionSet, TOptionValue>.LongName);
+                    var shortNameName = nameof(Option<TOptionSet, TOptionValue>.ShortName);
+                    throw new LogicErrorException($"Both {longNameName} and {shortNameName} were null.");
+                }
+
+                var message = ex.Message; // TODO: Support a configurable message for the option?
+                var error = new OptionValueFormatError(name, input, message);
+                return (null, error);
+            }
         }
     }
 }

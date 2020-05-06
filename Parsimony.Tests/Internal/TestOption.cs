@@ -7,32 +7,38 @@ namespace Parsimony.Tests.Internal
 {
     public class TestOption
     {
-        private readonly OptionName.Short _valueShortName =
-            OptionName.Parse("v") as OptionName.Short ?? throw new InvalidOperationException();
+        private static readonly OptionName.Short _valueShortName =
+            OptionName.Parse("v") as OptionName.Short ??
+                throw new InvalidOperationException($"Invalid option name for {nameof(_valueShortName)}.");
 
-        private readonly OptionName.Long _valueLongName =
-            OptionName.Parse("val") as OptionName.Long ?? throw new InvalidOperationException();
+        private static readonly OptionName.Long _valueLongName =
+            OptionName.Parse("val") as OptionName.Long ??
+                throw new InvalidOperationException($"Invalid option name for {nameof(_valueLongName)}.");
 
         private readonly Func<string, string> _parseValue = s => s;
 
         private readonly Action<Opts, string> _assignValue = (opts, v) => opts.Value = v;
 
         [Fact]
-        public void Ctor_NullShortNameAndLongName_Throws() =>
+        public void Ctor_NullShortNameAndLongName_Throws()
+        {
             Assert.Throws<ArgumentException>(() => new Option<Opts, string>(null, null, _parseValue, _assignValue));
+        }
 
-        [Fact]
-        public void Ctor_NullValueParser_Throws() =>
 #nullable disable
+        [Fact]
+        public void Ctor_NullValueParser_Throws()
+        {
             Assert.Throws<ArgumentNullException>(
                 "parseValue", () => new Option<Opts, string>(_valueShortName, _valueLongName, null, _assignValue));
-#nullable enable
+        }
 
         [Fact]
-        public void Ctor_NullAssignment_Throws() =>
-#nullable disable
+        public void Ctor_NullAssignment_Throws()
+        {
             Assert.Throws<ArgumentNullException>(
                 "assignValue", () => new Option<Opts, string>(_valueShortName, _valueLongName, _parseValue, null));
+        }
 #nullable enable
 
         [Fact]
@@ -78,16 +84,16 @@ namespace Parsimony.Tests.Internal
         }
 
         [Fact]
-        public void Parse_NullInput_Throws()
+        public void GetAssignment_NullInput_Throws()
         {
             var underTest = new Option<Opts, string>(_valueShortName, null, _parseValue, _assignValue);
 #nullable disable
-            Assert.Throws<ArgumentNullException>("input", () => underTest.Parse(null));
+            Assert.Throws<ArgumentNullException>("input", () => underTest.GetAssignment(null));
 #nullable enable
         }
 
         [Fact]
-        public void Parse_ValidInput_ParsesValueAndReturnsAssignmentAction()
+        public void GetAssignment_ValidInput_ParsesValueAndReturnsAssignmentAction()
         {
             // The parse function should use the Option's valueParse function to parse the input parameter then return
             // an Action<TOptions>. When the returned action is invoked it should pass the TOptions it receives and the
@@ -103,26 +109,42 @@ namespace Parsimony.Tests.Internal
 
             var underTest = new Option<Opts, string>(_valueShortName, null, parse.Object, assign.Object);
 
-            var result = underTest.Parse(inputValue);
+            var (assignment, error) = underTest.GetAssignment(inputValue);
+
+            Assert.NotNull(assignment);
+            Assert.Null(error);
 
             parse.Verify(p => p.Invoke(inputValue), Times.Once);
             assign.Verify(a => a.Invoke(It.IsAny<Opts>(), It.IsAny<string>()), Times.Never);
 
-            var opts = new Opts(false, "");
-            result(opts);
+            var opts = new Opts();
+
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            assignment(opts);
+#pragma warning restore CS8602
 
             assign.Verify(a => a.Invoke(opts, parsedValue), Times.Once);
         }
 
         [Fact]
-        public void Parse_ParseFnThrows_Throws()
+        public void GetAssignment_ParseFnThrows_ReturnsFormatError()
         {
-            // TODO: Find a better way to communicate the parse error
-            var expected = new Exception("junko");
-            string throwyParse(string s) => throw expected;
+            var exception = new Exception("junko");
+            string throwyParse(string s) => throw exception;
             var underTest = new Option<Opts, string>(_valueShortName, null, throwyParse, _assignValue);
-            var actual = Assert.Throws<Exception>(() => underTest.Parse("something"));
-            Assert.Same(expected, actual);
+            var input = "something";
+            var (assignment, error) = underTest.GetAssignment(input);
+            Assert.Null(assignment);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            Assert.Equal(_valueShortName, error.OptionName);
+            Assert.Equal(input, error.Value);
+            Assert.Equal(exception.Message, error.Message);
+#pragma warning restore CS8602
+        }
+
+        internal class Opts
+        {
+            public string? Value { get; set; }
         }
     }
 }

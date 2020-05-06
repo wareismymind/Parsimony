@@ -1,33 +1,41 @@
-﻿using System;
+﻿using Parsimony.Errors;
+using System;
 
 namespace Parsimony.Internal
 {
     /// <summary>
     /// The interface for an option within a typed set.
     /// </summary>
-    /// <typeparam name="TOptions">The type of the option set.</typeparam>
-    internal interface IOption<TOptions> where TOptions : notnull
+    /// <typeparam name="TOptionSet">The type of the set this option belongs to.</typeparam>
+    internal interface IOption<TOptionSet> where TOptionSet : class
     {
         /// <summary>
-        /// The option's short name.
+        /// The short name of the option.
         /// </summary>
-        public OptionName.Short? ShortName { get; }
+        /// <remarks>
+        /// At least one of <see cref="ShortName"/> and <see cref="LongName"/> must be non-<c>null</c>.
+        /// </remarks>
+        OptionName.Short? ShortName { get; }
 
         /// <summary>
-        /// The option's long name.
+        /// The long name of the option.
         /// </summary>
-        public OptionName.Long? LongName { get; }
+        /// <remarks>
+        /// At least one of <see cref="ShortName"/> and <see cref="LongName"/> must be non-<c>null</c>.
+        /// </remarks>
+        OptionName.Long? LongName { get; }
 
         /// <summary>
-        /// Indicates whether the option is a flag (bool) type.
+        /// Indicates whether option is a flag/<see cref="bool"/> or not.
         /// </summary>
-        public bool IsFlag { get; }
+        bool IsFlag { get; }
 
         /// <summary>
-        /// Parses <paramref name="input"/> value and returns an action that assigns the result to an option set.
+        /// Parses <paramref name="input"/> value and returns an action that assigns the result to an option set, or an
+        /// <see cref="OptionValueFormatError"/> if <paramref name="input"/> is not a valid value for the option.
         /// </summary>
         /// <param name="input">The input to parse.</param>
-        /// <returns>An action that assigns the parsed value to an option set.</returns>
-        public Action<TOptions> Parse(string input);
+        /// <returns>The assignment action or error.</returns>
+        (Action<TOptionSet>?, OptionValueFormatError?) GetAssignment(string input);
     }
 }
