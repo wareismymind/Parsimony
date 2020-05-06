@@ -13,8 +13,4 @@
     <DocumentationFile>Parsimony.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
 </Project>

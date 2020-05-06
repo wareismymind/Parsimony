@@ -8,21 +8,19 @@ namespace Parsimony.Tests.Internal
 {
     public class TestOptionRef
     {
+#nullable disable
         [Fact]
         public void Parse_NullInput_Throws()
         {
-#nullable disable
             Assert.Throws<ArgumentNullException>("input", () => OptionRef.Parse(null));
-#nullable enable
         }
 
         [Fact]
         public void Parse_EmptyInput_Throws()
         {
-#nullable disable
             Assert.Throws<ArgumentOutOfRangeException>("input", () => OptionRef.Parse(Array.Empty<string>()));
-#nullable enable
         }
+#nullable enable
 
         //
         // Happy path
@@ -33,9 +31,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("-f");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("f", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Null(optionRef.NextToken);
 
             Assert.Empty(input);
@@ -46,9 +44,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("-f", "unimation");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("f", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Equal("unimation", optionRef.NextToken);
             Assert.Equal(OptionRef.JoinType.Space, optionRef.Join);
 
@@ -60,9 +58,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("-funimation");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("f", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Equal("unimation", optionRef.NextToken);
             Assert.Equal(OptionRef.JoinType.Adjoined, optionRef.Join);
 
@@ -75,9 +73,9 @@ namespace Parsimony.Tests.Internal
             // The equals sign is part of the next token
             var (optionRef, input) = Parse("-f=unimation");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("f", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Equal("=unimation", optionRef.NextToken);
             Assert.Equal(OptionRef.JoinType.Adjoined, optionRef.Join);
 
@@ -89,9 +87,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("--foo");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("foo", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Null(optionRef.NextToken);
 
             Assert.Empty(input);
@@ -102,9 +100,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("--foo", "nimation");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("foo", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Equal("nimation", optionRef.NextToken);
             Assert.Equal(OptionRef.JoinType.Space, optionRef.Join);
 
@@ -116,9 +114,9 @@ namespace Parsimony.Tests.Internal
         {
             var (optionRef, input) = Parse("--foo=nimation");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("foo", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
             Assert.Equal("nimation", optionRef.NextToken);
             Assert.Equal(OptionRef.JoinType.Equals, optionRef.Join);
 
@@ -171,21 +169,21 @@ namespace Parsimony.Tests.Internal
         [Fact]
         public void Parse_NonAsciiShortName_ShortName()
         {
-            var (optionRef, input) = Parse("-ά");
+            var (optionRef, _) = Parse("-ά");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("ά", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
         }
 
         [Fact]
         public void Parse_NonAsciiLongName_LongName()
         {
-            var (optionRef, input) = Parse("--cάke-and-icecreάm");
+            var (optionRef, _) = Parse("--cάke-and-icecreάm");
             Assert.NotNull(optionRef);
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.Equal("cάke-and-icecreάm", optionRef.OptionName);
-#nullable enable
+#pragma warning restore CS8602
         }
 
         //

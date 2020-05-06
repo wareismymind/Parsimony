@@ -6,22 +6,22 @@ namespace Parsimony.Tests.Internal
 {
     public class TestOptionName
     {
+#nullable disable
         [Fact]
         public void Parse_Null_Throws()
         {
-#nullable disable
             Assert.Throws<ArgumentNullException>("input", () => OptionName.Parse(null));
-#nullable enable
         }
+#nullable enable
 
         [Fact]
         public void Parse_ShortName_ReturnsShortName()
         {
             var optionName = OptionName.Parse("f");
             Assert.IsType<OptionName.Short>(optionName);
-#nullable disable
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Equal("f", optionName);
-#nullable enable
+#pragma warning restore CS8604
         }
 
         [Fact]
@@ -29,9 +29,9 @@ namespace Parsimony.Tests.Internal
         {
             var optionName = OptionName.Parse("ά");
             Assert.IsType<OptionName.Short>(optionName);
-#nullable disable
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Equal("ά", optionName);
-#nullable enable
+#pragma warning restore CS8604
         }
 
         [Theory]
@@ -41,9 +41,9 @@ namespace Parsimony.Tests.Internal
         {
             var optionName = OptionName.Parse(longName);
             Assert.IsType<OptionName.Long>(optionName);
-#nullable disable
+#pragma warning disable CS8604 // Possible null reference argument.
             Assert.Equal(longName, optionName);
-#nullable enable
+#pragma warning restore CS8604
         }
 
         [Theory]
@@ -71,8 +71,9 @@ namespace Parsimony.Tests.Internal
             var equal = OptionName.Parse("foo");
             var @null = null as OptionName;
 
-#nullable disable
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             Assert.False(underTest.Equals(null as object));
+#pragma warning restore CS8602
             Assert.False(underTest.Equals(unequal as object));
             Assert.True(underTest.Equals(equal as object));
 
@@ -89,7 +90,6 @@ namespace Parsimony.Tests.Internal
             Assert.True(underTest != unequal);
             Assert.False(underTest != equal);
             Assert.False(@null != null);
-#nullable enable
         }
     }
 }

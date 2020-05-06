@@ -12,12 +12,12 @@ namespace Parsimony.Internal
         /// <summary>
         /// The regex for a valid short name (any unicode letter).
         /// </summary>
-        public const string ShortNamePattern = @"\p{L}";
+        internal const string ShortNamePattern = @"\p{L}";
 
         /// <summary>
         /// The regex for a valid long name (a hyphen-separated list or words made up of unicode letters).
         /// </summary>
-        public const string LongNamePattern = @"\p{L}+(-\p{L}+)*";
+        internal const string LongNamePattern = @"\p{L}+(-\p{L}+)*";
 
         private static readonly Regex _shortNameRegex = new Regex($"^{ShortNamePattern}$");
         private static readonly Regex _longNameRegex = new Regex($"^{LongNamePattern}$");
@@ -25,12 +25,12 @@ namespace Parsimony.Internal
         /// <summary>
         /// A short option name.
         /// </summary>
-        public class Short : OptionName { }
+        internal class Short : OptionName { }
 
         /// <summary>
         /// A long option name.
         /// </summary>
-        public class Long : OptionName { }
+        internal class Long : OptionName { }
 
 #nullable disable
         // This is always set by Parse
@@ -47,7 +47,7 @@ namespace Parsimony.Internal
         /// A <see cref="Short"/> or a <see cref="Long"/> when <paramref name="input"/> matches one of the respective
         /// patterns, otherwise <c>null</c>.
         /// </returns>
-        public static OptionName? Parse(string input)
+        internal static OptionName? Parse(string input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 

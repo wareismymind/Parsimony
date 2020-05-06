@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Parsimony.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -17,33 +18,54 @@ namespace Parsimony.Internal
             new Regex($"^--(?<name>{OptionName.LongNamePattern})(=(?<value>.*))?$");
 
         /// <summary>
-        /// Indicates how the next-token was joined to the option name.
+        /// Indicates how the next token was joined to the option name.
         /// </summary>
-        public enum JoinType
+        internal enum JoinType
         {
-            Adjoined, // Describes a short option with extra characters appended
-            Equals, // Describes a long option joined to a value by an '='
-            Space, // Describes an option name with a subsequent token
+            /// <summary>
+            /// A short option with extra characters appended.
+            /// </summary>
+            /// <remarks>
+            /// The extra characters may be additional options following a short name flag, or the value for a short
+            /// name option.
+            /// </remarks>
+            Adjoined,
+
+            /// <summary>
+            /// Describes a long option joined to a value by an '='.
+            /// </summary>
+            Equals,
+
+            /// <summary>
+            /// Describes an option name with a subsequent token.
+            /// </summary>
+            /// <remarks>
+            /// The token may be the option value, an additional option, or an argument token.
+            /// </remarks>
+            Space,
         }
 
         /// <summary>
         /// The name of the referenced option.
         /// </summary>
-        public OptionName OptionName { get; }
+        internal OptionName OptionName { get; }
 
         /// <summary>
         /// The token, if any, following the referenced option name.
         /// </summary>
         /// <remarks>
         /// This may be an adjoined token in the case of a short option name, a token joined by an '=' in the case of
-        /// a long option name, or the subsequent token in either case.
+        /// a long option name, or the subsequent token following a short or long name.
         /// </remarks>
-        public string? NextToken { get; }
+        internal string? NextToken { get; }
 
         /// <summary>
-        /// Indicates how the next-token was joined to the option name.
+        /// Indicates how the next token, if present, was joined to the option name.
         /// </summary>
-        public JoinType Join { get; }
+        /// <remarks>
+        /// If <see cref="NextToken"/> is <c>null</c> then this value has no meaning.
+        /// </remarks>
+        internal JoinType Join { get; }
 
         private OptionRef(OptionName optionName, string? nextToken, JoinType join = default)
         {
@@ -61,11 +83,11 @@ namespace Parsimony.Internal
         /// <paramref name="input"/>. If no <see cref="OptionRef"/> was found then <c>null</c> will be returned along
         /// with the complete <paramref name="input"/>.
         /// </returns>
-        public static (OptionRef?, IEnumerable<string>) Parse(IEnumerable<string> input)
+        internal static (OptionRef?, IEnumerable<string>) Parse(IEnumerable<string> input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
             var tokens = input.ToList();
-            if (tokens.Count == 0) throw new ArgumentOutOfRangeException(nameof(input), "Must not be empty");
+            if (tokens.Count == 0) throw new ArgumentOutOfRangeException(nameof(input), "Must not be empty.");
 
             (var optionRef, var newInput) = ParseShortOptionRef(tokens);
             if (optionRef != null)
@@ -81,10 +103,13 @@ namespace Parsimony.Internal
             if (!match.Success)
                 return (null, input);
 
-            var optionName = OptionName.Parse(match.Groups["name"].Value);
+            var name = match.Groups["name"].Value;
+            var optionName = OptionName.Parse(name);
             if (optionName == null)
-                // TODO: Create LogicErrorException
-                throw new Exception("LOGIC ERROR: option name in option ref regex is not a valid option name");
+            {
+                throw new LogicErrorException(
+                    $"Invalid option name '{name}' was matched by {nameof(OptionRef)} as a short name.");
+            }
 
 
             if (match.Groups["next"].Success)
@@ -111,10 +136,13 @@ namespace Parsimony.Internal
             if (!match.Success)
                 return (null, input);
 
-            var optionName = OptionName.Parse(match.Groups["name"].Value);
+            var name = match.Groups["name"].Value;
+            var optionName = OptionName.Parse(name);
             if (optionName == null)
-                // TODO: Create LogicErrorException
-                throw new Exception("LOGIC ERROR: option name in option ref regex is not a valid option name");
+            {
+                throw new LogicErrorException(
+                    $"Invalid option name '{name}' was matched by {nameof(OptionRef)} as a long name.");
+            }
 
             if (match.Groups["value"].Success)
             {
